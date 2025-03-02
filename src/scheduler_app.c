@@ -71,6 +71,8 @@ void scheduler_app_free(SchedulerApp* app) {
     furi_assert(app);
     scheduler_free(app->scheduler);
 
+    scheduler_run_view_free(app->run_view);
+
     variable_item_list_free(app->var_item_list);
 
     view_dispatcher_remove_view(app->view_dispatcher, SchedulerAppViewVarItemList);
