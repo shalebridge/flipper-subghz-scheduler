@@ -4,6 +4,7 @@
 #include <string.h>
 #include <subghz_scheduler_icons.h>
 #include <gui/elements.h>
+#include <gui/modules/text_box.h>
 
 #include "src/scheduler_run.h"
 #include "src/scheduler_app_i.h"
@@ -28,6 +29,7 @@ struct SchedulerRunView {
 
 struct SchedulerUIRunState {
     SchedulerApp* app;
+    FuriThread* dialog_thread;
     FuriString* header;
     FuriString* mode;
     FuriString* interval;
@@ -37,6 +39,8 @@ struct SchedulerUIRunState {
     FuriString* tx_countdown;
     uint8_t tick_counter;
     uint8_t list_count;
+
+    bool exit;
 };
 SchedulerUIRunState* state;
 
@@ -146,6 +150,7 @@ static void update_countdown(Scheduler* scheduler) {
 
 static void scheduler_ui_run_state_alloc(SchedulerApp* app) {
     state = malloc(sizeof(SchedulerUIRunState));
+    state->dialog_thread = furi_thread_alloc();
     state->header = furi_string_alloc_set("Schedule Running");
     state->mode = furi_string_alloc_set(mode_text[scheduler_get_mode(app->scheduler)]);
     state->interval = furi_string_alloc_set(interval_text[scheduler_get_interval(app->scheduler)]);
@@ -157,9 +162,11 @@ static void scheduler_ui_run_state_alloc(SchedulerApp* app) {
     state->tx_countdown = furi_string_alloc();
     state->list_count = scheduler_get_list_count(app->scheduler);
     state->app = app;
+    state->exit = false;
 }
 
 static void scheduler_ui_run_state_free() {
+    furi_thread_free(state->dialog_thread);
     furi_string_free(state->header);
     furi_string_free(state->mode);
     furi_string_free(state->interval);
@@ -176,6 +183,7 @@ void scheduler_scene_run_on_enter(void* context) {
     scheduler_reset(app->scheduler);
     scheduler_ui_run_state_alloc(app);
     subghz_devices_init();
+    view_set_context(app->run_view->view, app);
     view_dispatcher_switch_to_view(app->view_dispatcher, SchedulerSceneRunSchedule);
 }
 
@@ -188,6 +196,44 @@ void scheduler_scene_run_on_exit(void* context) {
     subghz_devices_deinit();
     scheduler_ui_run_state_free();
     furi_hal_power_suppress_charge_exit();
+}
+
+static void scheduler_run_view_dialog_thread_state(
+    FuriThread* thread,
+    FuriThreadState thread_state,
+    void* context) {
+    furi_assert(state->dialog_thread == thread);
+    SchedulerApp* app = context;
+
+    if(thread_state == FuriThreadStateStopped) {
+        FURI_LOG_I(TAG, "Thread stopped");
+        if(state->exit) {
+            while(app->is_transmitting)
+                furi_delay_ms(10);
+            FURI_LOG_W(TAG, "Wait done");
+            //scene_manager_search_and_switch_to_previous_scene(
+            //    app->scene_manager, SchedulerSceneStart);
+            //furi_thread_yield();
+            //scene_manager_previous_scene(app->scene_manager);
+        }
+    } else if(thread_state == FuriThreadStateStarting) {
+        FURI_LOG_I(TAG, "Thread starting");
+    }
+}
+
+static int32_t scheduler_run_view_exit_dialog(void* context) {
+    SchedulerApp* app = context;
+    DialogMessage* message = dialog_message_alloc();
+
+    dialog_message_set_header(message, "Sub-GHz Scheduler v2.2", 64, 0, AlignCenter, AlignTop);
+    dialog_message_set_text(
+        message, "Do you want to stop\nthe schedule timer?", 64, 25, AlignCenter, AlignCenter);
+    dialog_message_set_buttons(message, NULL, "Stop Timer", NULL);
+    if(dialog_message_show(app->dialogs, message) == DialogMessageButtonCenter) {
+        state->exit = true;
+    }
+    dialog_message_free(message);
+    return 0;
 }
 
 bool scheduler_scene_run_on_event(void* context, SceneManagerEvent event) {
@@ -215,16 +261,39 @@ bool scheduler_scene_run_on_event(void* context, SceneManagerEvent event) {
         view_dispatcher_switch_to_view(app->view_dispatcher, SchedulerSceneRunSchedule);
         state->tick_counter++;
         consumed = true;
+    } else if(event.type == SceneManagerEventTypeBack) {
+        furi_thread_set_name(state->dialog_thread, "SchedulerExitThread");
+        furi_thread_set_stack_size(state->dialog_thread, 1024);
+        furi_thread_set_callback(state->dialog_thread, scheduler_run_view_exit_dialog);
+        furi_thread_set_context(state->dialog_thread, app);
+
+        furi_thread_set_state_callback(
+            state->dialog_thread, scheduler_run_view_dialog_thread_state);
+        furi_thread_set_state_context(state->dialog_thread, app);
+        furi_thread_start(state->dialog_thread);
+        consumed = true;
     }
 
+    return consumed;
+}
+
+bool scheduler_run_view_on_input(InputEvent* event, void* context) {
+    furi_assert(event);
+    furi_assert(context);
+    SchedulerApp* app = context;
+    bool consumed = false;
+    if(event->key == InputKeyBack && event->type == InputTypeLong) {
+        scene_manager_previous_scene(app->scene_manager);
+        consumed = true;
+    }
     return consumed;
 }
 
 SchedulerRunView* scheduler_run_view_alloc() {
     SchedulerRunView* run_view = malloc(sizeof(SchedulerRunView));
     run_view->view = view_alloc();
-    view_set_context(run_view->view, run_view);
     view_set_draw_callback(run_view->view, scheduler_run_view_draw_callback);
+    view_set_input_callback(run_view->view, scheduler_run_view_on_input);
     return run_view;
 }
 
