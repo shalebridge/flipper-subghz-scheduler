@@ -73,7 +73,7 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
 
 This app is tested against the current `dev` and `release` branches of the [OFW](https://github.com/flipperdevices/flipperzero-firmware):
 
-* Current OFW Version: 1.2.0
+* Current OFW Version: 1.3.4
 <br>[![Compatibility status:](https://github.com/shalebridge/flipper-subghz-scheduler/actions/workflows/build.yml/badge.svg)](https://github.com/shalebridge/flipper-subghz-scheduler/actions/workflows/build.yml)
 
 It has also been tested against [Momentum 009](https://github.com/Next-Flip/Momentum-Firmware/releases/tag/mntm-009).
