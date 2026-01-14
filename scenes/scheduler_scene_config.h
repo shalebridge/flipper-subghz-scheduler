@@ -1,3 +1,6 @@
+ADD_SCENE(scheduler, menu, Menu)
 ADD_SCENE(scheduler, start, Start)
 ADD_SCENE(scheduler, run, RunSchedule)
 ADD_SCENE(scheduler, load, LoadFile)
+ADD_SCENE(scheduler, loadschedule, LoadSchedule)
+ADD_SCENE(scheduler, about, About)

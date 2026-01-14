@@ -50,6 +50,14 @@ SchedulerApp* scheduler_app_alloc(void) {
         app->view_dispatcher, scheduler_app_tick_event_callback, 500);
     view_dispatcher_attach_to_gui(app->view_dispatcher, app->gui, ViewDispatcherTypeFullscreen);
 
+    app->menu = submenu_alloc();
+    view_dispatcher_add_view(
+        app->view_dispatcher, SchedulerAppViewMenu, submenu_get_view(app->menu));
+
+    app->about_widget = widget_alloc();
+    view_dispatcher_add_view(
+        app->view_dispatcher, SchedulerAppViewAbout, widget_get_view(app->about_widget));
+
     app->var_item_list = variable_item_list_alloc();
     view_dispatcher_add_view(
         app->view_dispatcher,
@@ -78,7 +86,7 @@ SchedulerApp* scheduler_app_alloc(void) {
         scheduler_set_radio(app->scheduler, 0);
     }
 
-    scene_manager_next_scene(app->scene_manager, SchedulerSceneStart);
+    scene_manager_next_scene(app->scene_manager, SchedulerSceneMenu);
 
     return app;
 }
@@ -88,6 +96,12 @@ void scheduler_app_free(SchedulerApp* app) {
     scheduler_free(app->scheduler);
 
     variable_item_list_free(app->var_item_list);
+
+    view_dispatcher_remove_view(app->view_dispatcher, SchedulerAppViewMenu);
+    submenu_free(app->menu);
+
+    view_dispatcher_remove_view(app->view_dispatcher, SchedulerAppViewAbout);
+    widget_free(app->about_widget);
 
     view_dispatcher_remove_view(app->view_dispatcher, SchedulerAppViewVarItemList);
     view_dispatcher_remove_view(app->view_dispatcher, SchedulerAppViewRunSchedule);

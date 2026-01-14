@@ -11,15 +11,6 @@
 
 #define TAG "SubGHzSchedulerRunView"
 
-#define GUI_DISPLAY_HEIGHT 64
-#define GUI_DISPLAY_WIDTH  128
-#define GUI_MARGIN         5
-#define GUI_TEXT_GAP       10
-
-#define GUI_TEXTBOX_HEIGHT 12
-#define GUI_TABLE_ROW_A    13
-#define GUI_TABLE_ROW_B    (GUI_TABLE_ROW_A + GUI_TEXTBOX_HEIGHT) - 1
-
 #define MAX_FILENAME_WIDTH_PX 95
 
 struct SchedulerRunView {
