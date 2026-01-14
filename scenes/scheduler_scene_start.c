@@ -10,6 +10,55 @@
 
 #define TAG "Sub-GHzSchedulerSceneStart"
 
+typedef uint8_t (*SchedulerGetIdxFn)(const Scheduler* scheduler);
+typedef void (*SchedulerSetIdxFn)(Scheduler* scheduler, uint8_t idx);
+
+inline uint8_t clamp_u8(uint8_t v, uint8_t max_exclusive) {
+    return (max_exclusive == 0) ? 0 : (v < max_exclusive ? v : 0);
+}
+
+static uint8_t get_interval_idx(const Scheduler* s) {
+    return scheduler_get_interval((Scheduler*)s);
+}
+static void set_interval_idx(Scheduler* s, uint8_t idx) {
+    scheduler_set_interval(s, idx);
+}
+
+static uint8_t get_timing_idx(const Scheduler* s) {
+    return scheduler_get_timing_mode((Scheduler*)s);
+}
+static void set_timing_idx(Scheduler* s, uint8_t idx) {
+    scheduler_set_timing_mode(s, idx);
+}
+
+static uint8_t get_repeats_idx(const Scheduler* s) {
+    return scheduler_get_tx_repeats((Scheduler*)s);
+}
+static void set_repeats_idx(Scheduler* s, uint8_t idx) {
+    scheduler_set_tx_repeats(s, idx);
+}
+
+static uint8_t get_mode_idx(const Scheduler* s) {
+    return (uint8_t)scheduler_get_mode((Scheduler*)s);
+}
+static void set_mode_idx(Scheduler* s, uint8_t idx) {
+    scheduler_set_mode(s, (SchedulerTxMode)idx);
+}
+
+static uint8_t get_tx_delay_idx(const Scheduler* s) {
+    return scheduler_get_tx_delay_index((Scheduler*)s);
+}
+static void set_tx_delay_idx(Scheduler* s, uint8_t idx) {
+    scheduler_set_tx_delay(s, idx);
+}
+
+static uint8_t get_radio_idx(const Scheduler* s) {
+    return scheduler_get_radio((Scheduler*)s);
+}
+static void set_radio_idx(Scheduler* s, uint8_t idx) {
+    scheduler_set_radio(s, idx);
+}
+
 static VariableItem* add_scheduler_option_item(
     VariableItemList* list,
     SchedulerApp* app,
@@ -49,6 +98,8 @@ static void scheduler_scene_start_var_list_enter_callback(void* context, uint32_
         view_dispatcher_send_custom_event(app->view_dispatcher, SchedulerStartRunEvent);
     } else if(index == SchedulerStartEventSelectFile) {
         view_dispatcher_send_custom_event(app->view_dispatcher, SchedulerStartEventSelectFile);
+    } else if(index == SchedulerStartEventSaveSchedule) {
+        view_dispatcher_send_custom_event(app->view_dispatcher, SchedulerStartEventSaveSchedule);
     }
 }
 
@@ -180,6 +231,10 @@ void scheduler_scene_start_on_enter(void* context) {
             variable_item_set_current_value_text(item, buffer);
         }
     }
+
+    VariableItem* save_item = variable_item_list_add(var_item_list, "Save Schedule", 0, NULL, app);
+    variable_item_set_current_value_text(save_item, "[Coming Soon]");
+
     variable_item_list_add(var_item_list, "Start", 0, NULL, app);
 
     variable_item_list_set_selected_item(
@@ -202,6 +257,13 @@ bool scheduler_scene_start_on_event(void* context, SceneManagerEvent event) {
             }
         } else if(event.event == SchedulerStartEventSelectFile) {
             scene_manager_next_scene(app->scene_manager, SchedulerSceneLoadFile);
+        } else if(event.event == SchedulerStartEventSaveSchedule) {
+            DialogMessage* msg = dialog_message_alloc();
+            dialog_message_set_header(msg, "Save Schedule", 64, 8, AlignCenter, AlignTop);
+            dialog_message_set_text(msg, "Not implemented yet.", 64, 28, AlignCenter, AlignTop);
+            dialog_message_set_buttons(msg, NULL, "OK", NULL);
+            dialog_message_show(app->dialogs, msg);
+            dialog_message_free(msg);
         }
         consumed = true;
     }
