@@ -85,8 +85,8 @@ static const char* const interval_text[INTERVAL_COUNT] = {
 static const uint32_t interval_second_value[INTERVAL_COUNT] =
     {1, 2, 5, 10, 30, 60, 120, 300, 600, 1200, 1800, 2700, 3600, 7200, 14400, 28800, 43200, 86400};
 
-#define REPEATS_COUNT 6
-static const char* const tx_repeats_text[REPEATS_COUNT] = {
+#define TX_COUNT 6
+static const char* const tx_count_text[TX_COUNT] = {
     "x1",
     "x2",
     "x3",

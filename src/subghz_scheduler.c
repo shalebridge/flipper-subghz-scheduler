@@ -12,7 +12,7 @@ struct Scheduler {
     char* file_name;
     uint16_t tx_delay;
     uint8_t interval;
-    uint8_t tx_repeats;
+    uint8_t tx_count;
     uint8_t list_count;
     bool radio;
 };
@@ -43,7 +43,7 @@ void scheduler_full_reset(Scheduler* scheduler) {
     scheduler_time_reset(scheduler);
     scheduler->tx_delay = SchedulerTxDelay100;
     scheduler->interval = Interval10Sec;
-    scheduler->tx_repeats = 0;
+    scheduler->tx_count = 0;
     scheduler->file_type = SchedulerFileTypeSingle;
     scheduler->list_count = 1;
     scheduler->file_name = NULL;
@@ -68,9 +68,9 @@ void scheduler_set_timing_mode(Scheduler* scheduler, bool mode) {
     scheduler->timing_mode = mode;
 }
 
-void scheduler_set_tx_repeats(Scheduler* scheduler, uint8_t tx_repeats) {
+void scheduler_set_tx_count(Scheduler* scheduler, uint8_t tx_count) {
     furi_assert(scheduler);
-    scheduler->tx_repeats = tx_repeats;
+    scheduler->tx_count = tx_count;
 }
 
 void scheduler_set_mode(Scheduler* scheduler, SchedulerTxMode mode) {
@@ -155,9 +155,9 @@ uint8_t scheduler_get_interval(Scheduler* scheduler) {
     return scheduler->interval;
 }
 
-uint8_t scheduler_get_tx_repeats(Scheduler* scheduler) {
+uint8_t scheduler_get_tx_count(Scheduler* scheduler) {
     furi_assert(scheduler);
-    return scheduler->tx_repeats;
+    return scheduler->tx_count;
 }
 
 const char* scheduler_get_file_name(Scheduler* scheduler) {

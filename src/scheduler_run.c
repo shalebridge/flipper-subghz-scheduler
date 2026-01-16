@@ -137,8 +137,8 @@ static int32_t scheduler_tx(void* context) {
         }
         flipper_format_file_close(tx_run->fff_file);
 
-        uint8_t repeats = scheduler_get_tx_repeats(app->scheduler);
-        for(uint_fast8_t i = 0; i <= repeats; ++i) {
+        uint8_t tx_count = scheduler_get_tx_count(app->scheduler);
+        for(uint_fast8_t i = 0; i <= tx_count; ++i) {
             subghz_environment_set_protocol_registry(
                 tx_run->environment, (void*)&subghz_protocol_registry);
             SubGhzTransmitter* transmitter = subghz_transmitter_alloc_init(

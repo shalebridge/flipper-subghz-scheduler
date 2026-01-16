@@ -23,6 +23,7 @@
 #define SCHEDULER_APP_NAME    "Sub-GHz Scheduler"
 #define SCHEDULER_APP_VERSION "3.0"
 #define SCHEDULER_APP_AUTHOR  "Patrick Edwards"
+#define SCHEDULER_APP_HANDLE  "@shalebridge"
 
 #define GUI_DISPLAY_HEIGHT 64
 #define GUI_DISPLAY_WIDTH  128

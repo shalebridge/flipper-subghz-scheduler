@@ -3,7 +3,7 @@
 typedef enum {
     SchedulerStartEventSetInterval,
     SchedulerStartEventSetTiming,
-    SchedulerStartEventSetRepeats,
+    SchedulerStartEventSetTxCount,
     SchedulerStartEventSetImmediate,
     SchedulerStartEventSetTxDelay,
     SchedulerStartEventSetRadio,

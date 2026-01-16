@@ -7,9 +7,9 @@
 #define TAG "SubGHzSchedulerAbout"
 
 typedef enum {
-    AboutPageMain = 0,
-    AboutPageInfo = 1,
-    AboutPageArt = 2,
+    AboutPageMain,
+    AboutPageInfo,
+    AboutPageArt,
     AboutPageCount
 } AboutPage;
 
@@ -46,7 +46,7 @@ static void about_build_page(SchedulerApp* app, AboutPage page) {
             AlignLeft,
             AlignTop,
             FontSecondary,
-            "@shalebridge");
+            SCHEDULER_APP_HANDLE);
 
         widget_add_string_element(
             app->about_widget,

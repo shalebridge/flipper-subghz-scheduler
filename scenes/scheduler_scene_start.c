@@ -23,11 +23,11 @@ static void set_timing_idx(Scheduler* s, uint8_t idx) {
     scheduler_set_timing_mode(s, idx);
 }
 
-static uint8_t get_repeats_idx(const Scheduler* s) {
-    return scheduler_get_tx_repeats((Scheduler*)s);
+static uint8_t get_tx_count_idx(const Scheduler* s) {
+    return scheduler_get_tx_count((Scheduler*)s);
 }
-static void set_repeats_idx(Scheduler* s, uint8_t idx) {
-    scheduler_set_tx_repeats(s, idx);
+static void set_tx_count_idx(Scheduler* s, uint8_t idx) {
+    scheduler_set_tx_count(s, idx);
 }
 
 static uint8_t get_mode_idx(const Scheduler* s) {
@@ -108,11 +108,11 @@ static void scheduler_scene_start_set_timing(VariableItem* item) {
     scheduler_set_timing_mode(app->scheduler, index);
 }
 
-static void scheduler_scene_start_set_repeats(VariableItem* item) {
+static void scheduler_scene_start_set_tx_count(VariableItem* item) {
     SchedulerApp* app = variable_item_get_context(item);
     uint8_t index = variable_item_get_current_value_index(item);
-    variable_item_set_current_value_text(item, tx_repeats_text[index]);
-    scheduler_set_tx_repeats(app->scheduler, index);
+    variable_item_set_current_value_text(item, tx_count_text[index]);
+    scheduler_set_tx_count(app->scheduler, index);
 }
 
 static void scheduler_scene_start_set_mode(VariableItem* item) {
@@ -174,12 +174,12 @@ void scheduler_scene_start_on_enter(void* context) {
     add_scheduler_option_item(
         var_item_list,
         app,
-        "Repeats:",
-        REPEATS_COUNT,
-        scheduler_scene_start_set_repeats,
-        get_repeats_idx,
-        set_repeats_idx,
-        tx_repeats_text);
+        "TX Count:",
+        TX_COUNT,
+        scheduler_scene_start_set_tx_count,
+        get_tx_count_idx,
+        set_tx_count_idx,
+        tx_count_text);
 
     add_scheduler_option_item(
         var_item_list,

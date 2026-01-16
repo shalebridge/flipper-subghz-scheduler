@@ -49,4 +49,5 @@ void scheduler_scene_loadschedule_on_exit(void* context) {
     furi_assert(context);
     SchedulerApp* app = context;
     scene_manager_set_scene_state(app->scene_manager, SchedulerSceneStart, 0);
+    scene_manager_search_and_switch_to_another_scene(app->scene_manager, SchedulerSceneStart);
 }

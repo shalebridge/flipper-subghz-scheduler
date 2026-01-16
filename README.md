@@ -27,7 +27,7 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
   </tr>
  <tr style="border:0px">
   <td style="border:0px" width="25%" align="left">
-    Data Tx Repeats:<br>
+    Data Tx Count:<br>
   <ul>
   <li>x1, x2, x3, x4, x5, x6</li>
   </ul>
@@ -67,12 +67,12 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
   <td style="border:0px" width="25%" align="left">
    Run view displays:
     <ul>
-      <li>TX mode</li>
-      <li>TX interval</li>
-      <li>TX Repeats</li>
+      <li>TX Mode</li>
+      <li>TX Interval</li>
+      <li>TX Count</li>
       <li>Radio</li>
-      <li>Selected file</li>
-      <li>TX interval countdown</li>
+      <li>Selected File</li>
+      <li>TX Interval Countdown</li>
     </ul>
   </td>
    <td style="border:0px" width="20%"><img src="./screenshots/v2.3/rundisplay.png" width="100%"></td>
@@ -100,14 +100,16 @@ pip install ufbt
 For build only, run `ufbt` from the terminal in the project directory. To upload, make sure Flipper is connected to your computer and run `ufbt launch`.
 
 The directory contains the following batch script(s) to simplify the upload process:
-* `win_launch.bat` - Windows only. Invokes `ufbt` to deploy and launch the app on a flipper over USB, and resets terminal colors in case of error.
+* `launch_win.bat` - Windows only. Invokes `ufbt` to deploy and launch the app on a flipper over USB, and resets terminal colors in case of error.
 
 Build outputs are found in the `dist` directory for each application.
 
 
 # To-Do
+- [ ] Convert preset intervals to custom H:M:S time. Ditto for millisecond delay between repeated transmissions.
+- [ ] Enable running in the background.
+- [ ] `TESTING IN PROGRESS` Enable interval delays for playlists. For example, turning on a light (playlist index 1), then 4 hours later turning it off (playlist index 2), and run that at another arbitrary interval. This can include custom playlist keys or custom app files.
 - [ ] Add 'alarm' mode, to set specific time for transmission.
-- [ ] Enable interval delays for playlists. For example, turning on a light (playlist index 1), then 4 hours later turning it off (playlist index 2), and run that at another arbitrary interval. This can include custom playlist keys or custom app files.
 - [ ] More visual feedback of current transmission (like `SubGHz Playlist`).
 - [ ] Enable quitting from transmission. Currently, if back is pressed during playlist transmission, transmission will complete before exiting to main menu.
 - [ ] Options to select notifications on transmit (vibro, backlight, etc).

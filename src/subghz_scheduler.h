@@ -17,14 +17,14 @@ void scheduler_get_countdown_fmt(Scheduler* scheduler, char* buffer, uint8_t siz
 
 void scheduler_set_interval(Scheduler* scheduler, uint8_t interval);
 void scheduler_set_timing_mode(Scheduler* scheduler, bool mode);
-void scheduler_set_tx_repeats(Scheduler* scheduler, uint8_t tx_repeats);
+void scheduler_set_tx_count(Scheduler* scheduler, uint8_t tx_count);
 void scheduler_set_mode(Scheduler* scheduler, SchedulerTxMode mode);
 void scheduler_set_tx_delay(Scheduler* scheduler, uint8_t tx_delay);
 void scheduler_set_radio(Scheduler* scheduler, uint8_t radio);
 void scheduler_set_file(Scheduler* scheduler, const char* file_name, int8_t list_count);
 
 uint8_t scheduler_get_interval(Scheduler* scheduler);
-uint8_t scheduler_get_tx_repeats(Scheduler* scheduler);
+uint8_t scheduler_get_tx_count(Scheduler* scheduler);
 SchedulerTxMode scheduler_get_mode(Scheduler* scheduler);
 uint16_t scheduler_get_tx_delay(Scheduler* scheduler);
 bool scheduler_get_radio(Scheduler* scheduler);
