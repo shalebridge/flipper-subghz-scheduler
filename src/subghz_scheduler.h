@@ -16,9 +16,9 @@ bool scheduler_time_to_trigger(Scheduler* scheduler);
 void scheduler_get_countdown_fmt(Scheduler* scheduler, char* buffer, uint8_t size);
 
 void scheduler_set_interval(Scheduler* scheduler, uint8_t interval);
-void scheduler_set_timing_mode(Scheduler* scheduler, bool mode);
+void scheduler_set_timing_mode(Scheduler* scheduler, bool tx_mode);
 void scheduler_set_tx_count(Scheduler* scheduler, uint8_t tx_count);
-void scheduler_set_mode(Scheduler* scheduler, SchedulerTxMode mode);
+void scheduler_set_mode(Scheduler* scheduler, SchedulerTxMode tx_mode);
 void scheduler_set_tx_delay(Scheduler* scheduler, uint8_t tx_delay);
 void scheduler_set_radio(Scheduler* scheduler, uint8_t radio);
 void scheduler_set_file(Scheduler* scheduler, const char* file_name, int8_t list_count);

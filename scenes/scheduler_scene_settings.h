@@ -15,7 +15,7 @@ typedef enum SchedulerTxMode {
     SchedulerTxModeSettingsNum,
 } SchedulerTxMode;
 #define TX_MODE_COUNT SchedulerTxModeSettingsNum
-static const char* const mode_text[SchedulerTxModeSettingsNum] = {
+static const char* const tx_mode_text[SchedulerTxModeSettingsNum] = {
     "Normal",
     "Immed.",
     "1-Shot",

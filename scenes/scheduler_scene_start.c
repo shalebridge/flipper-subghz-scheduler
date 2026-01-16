@@ -30,10 +30,10 @@ static void set_tx_count_idx(Scheduler* s, uint8_t idx) {
     scheduler_set_tx_count(s, idx);
 }
 
-static uint8_t get_mode_idx(const Scheduler* s) {
+static uint8_t get_tx_mode_idx(const Scheduler* s) {
     return (uint8_t)scheduler_get_mode((Scheduler*)s);
 }
-static void set_mode_idx(Scheduler* s, uint8_t idx) {
+static void set_tx_mode_idx(Scheduler* s, uint8_t idx) {
     scheduler_set_mode(s, (SchedulerTxMode)idx);
 }
 
@@ -118,7 +118,7 @@ static void scheduler_scene_start_set_tx_count(VariableItem* item) {
 static void scheduler_scene_start_set_mode(VariableItem* item) {
     SchedulerApp* app = variable_item_get_context(item);
     SchedulerTxMode index = variable_item_get_current_value_index(item);
-    variable_item_set_current_value_text(item, mode_text[index]);
+    variable_item_set_current_value_text(item, tx_mode_text[index]);
     scheduler_set_mode(app->scheduler, index);
 }
 
@@ -184,12 +184,12 @@ void scheduler_scene_start_on_enter(void* context) {
     add_scheduler_option_item(
         var_item_list,
         app,
-        "Mode:",
+        "TX Mode:",
         SchedulerTxModeSettingsNum,
         scheduler_scene_start_set_mode,
-        get_mode_idx,
-        set_mode_idx,
-        mode_text);
+        get_tx_mode_idx,
+        set_tx_mode_idx,
+        tx_mode_text);
 
     add_scheduler_option_item(
         var_item_list,

@@ -13,7 +13,7 @@
 #define KEY_INTERVAL_IDX  "IntervalIdx"
 #define KEY_TIMING_MODE   "TimingModeIdx"
 #define KEY_TXCOUNT_IDX   "TxCountIdx"
-#define KEY_MODE_IDX      "TxModeIdx"
+#define KEY_TX_MODE_IDX   "TxModeIdx"
 #define KEY_TX_DELAY_IDX  "TxDelayIdx"
 #define KEY_RADIO_IDX     "RadioIdx"
 #define KEY_SCHEDULE_FILE "TxFile"
@@ -62,7 +62,7 @@ bool scheduler_settings_save_to_path(SchedulerApp* app, const char* full_path) {
         flipper_format_write_uint32(ff, KEY_TXCOUNT_IDX, &v, 1);
 
         v = scheduler_get_mode(app->scheduler);
-        flipper_format_write_uint32(ff, KEY_MODE_IDX, &v, 1);
+        flipper_format_write_uint32(ff, KEY_TX_MODE_IDX, &v, 1);
 
         v = scheduler_get_tx_delay_index(app->scheduler);
         flipper_format_write_uint32(ff, KEY_TX_DELAY_IDX, &v, 1);
@@ -124,21 +124,21 @@ bool scheduler_settings_load_from_path(SchedulerApp* app, const char* full_path)
         uint8_t interval_idx;
         uint8_t timing_mode;
         uint8_t txcount_idx;
-        uint8_t mode_idx;
+        uint8_t tx_mode_idx;
         uint8_t tx_delay_idx;
         uint8_t radio_idx;
 
         flipper_format_read_uint32(ff, KEY_INTERVAL_IDX, (uint32_t*)&interval_idx, 1);
         flipper_format_read_uint32(ff, KEY_TIMING_MODE, (uint32_t*)&timing_mode, 1);
         flipper_format_read_uint32(ff, KEY_TXCOUNT_IDX, (uint32_t*)&txcount_idx, 1);
-        flipper_format_read_uint32(ff, KEY_MODE_IDX, (uint32_t*)&mode_idx, 1);
+        flipper_format_read_uint32(ff, KEY_TX_MODE_IDX, (uint32_t*)&tx_mode_idx, 1);
         flipper_format_read_uint32(ff, KEY_TX_DELAY_IDX, (uint32_t*)&tx_delay_idx, 1);
         flipper_format_read_uint32(ff, KEY_RADIO_IDX, (uint32_t*)&radio_idx, 1);
 
         scheduler_set_interval(app->scheduler, interval_idx);
         scheduler_set_timing_mode(app->scheduler, timing_mode);
         scheduler_set_tx_count(app->scheduler, txcount_idx);
-        scheduler_set_mode(app->scheduler, (SchedulerTxMode)mode_idx);
+        scheduler_set_mode(app->scheduler, (SchedulerTxMode)tx_mode_idx);
         scheduler_set_tx_delay(app->scheduler, tx_delay_idx);
         scheduler_set_radio(app->scheduler, app->ext_radio_present ? radio_idx : 0);
 

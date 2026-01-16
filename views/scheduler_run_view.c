@@ -11,7 +11,7 @@
 
 typedef struct {
     FuriString* header;
-    FuriString* mode;
+    FuriString* tx_mode;
     FuriString* interval;
     FuriString* tx_count;
     FuriString* file_type;
@@ -65,7 +65,7 @@ static void scheduler_run_view_draw_callback(Canvas* canvas, SchedulerRunViewMod
         (GUI_TEXT_GAP * 2),
         AlignLeft,
         AlignCenter,
-        furi_string_get_cstr(model->mode));
+        furi_string_get_cstr(model->tx_mode));
 
     /* ============= INTERVAL ============= */
     canvas_draw_frame(canvas, 48, GUI_TABLE_ROW_A, 48, GUI_TEXTBOX_HEIGHT);
@@ -147,7 +147,7 @@ SchedulerRunView* scheduler_run_view_alloc() {
         SchedulerRunViewModel * model,
         {
             model->header = furi_string_alloc_set("Schedule Running");
-            model->mode = furi_string_alloc();
+            model->tx_mode = furi_string_alloc();
             model->interval = furi_string_alloc();
             model->tx_count = furi_string_alloc();
             model->file_type = furi_string_alloc();
@@ -168,7 +168,7 @@ void scheduler_run_view_free(SchedulerRunView* run_view) {
         SchedulerRunViewModel * model,
         {
             furi_string_free(model->header);
-            furi_string_free(model->mode);
+            furi_string_free(model->tx_mode);
             furi_string_free(model->interval);
             furi_string_free(model->tx_count);
             furi_string_free(model->file_type);
@@ -193,7 +193,7 @@ void scheduler_run_view_set_static_fields(SchedulerRunView* run_view, Scheduler*
         run_view->view,
         SchedulerRunViewModel * model,
         {
-            furi_string_set(model->mode, mode_text[scheduler_get_mode(scheduler)]);
+            furi_string_set(model->tx_mode, tx_mode_text[scheduler_get_mode(scheduler)]);
             furi_string_set(model->interval, interval_text[scheduler_get_interval(scheduler)]);
             furi_string_set(model->tx_count, tx_count_text[scheduler_get_tx_count(scheduler)]);
             furi_string_set(model->file_type, file_type_text[scheduler_get_file_type(scheduler)]);

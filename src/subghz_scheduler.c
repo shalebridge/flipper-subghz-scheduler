@@ -7,7 +7,7 @@ struct Scheduler {
     uint32_t previous_run_time;
     uint32_t countdown;
     FileTxType file_type;
-    SchedulerTxMode mode;
+    SchedulerTxMode tx_mode;
     SchedulerTimingMode timing_mode;
     char* file_name;
     uint16_t tx_delay;
@@ -47,7 +47,7 @@ void scheduler_full_reset(Scheduler* scheduler) {
     scheduler->file_type = SchedulerFileTypeSingle;
     scheduler->list_count = 1;
     scheduler->file_name = NULL;
-    scheduler->mode = SchedulerTxModeNormal;
+    scheduler->tx_mode = SchedulerTxModeNormal;
     scheduler->timing_mode = SchedulerTimingModeRelative;
     scheduler->radio = 0; // internal by default
 }
@@ -63,9 +63,9 @@ void scheduler_set_interval(Scheduler* scheduler, uint8_t interval) {
     scheduler->countdown = interval_second_value[scheduler->interval];
 }
 
-void scheduler_set_timing_mode(Scheduler* scheduler, bool mode) {
+void scheduler_set_timing_mode(Scheduler* scheduler, bool tx_mode) {
     furi_assert(scheduler);
-    scheduler->timing_mode = mode;
+    scheduler->timing_mode = tx_mode;
 }
 
 void scheduler_set_tx_count(Scheduler* scheduler, uint8_t tx_count) {
@@ -73,9 +73,9 @@ void scheduler_set_tx_count(Scheduler* scheduler, uint8_t tx_count) {
     scheduler->tx_count = tx_count;
 }
 
-void scheduler_set_mode(Scheduler* scheduler, SchedulerTxMode mode) {
+void scheduler_set_mode(Scheduler* scheduler, SchedulerTxMode tx_mode) {
     furi_assert(scheduler);
-    scheduler->mode = mode;
+    scheduler->tx_mode = tx_mode;
 }
 
 void scheduler_set_tx_delay(Scheduler* scheduler, uint8_t tx_delay) {
@@ -120,7 +120,7 @@ bool scheduler_time_to_trigger(Scheduler* scheduler) {
     uint32_t current_time = furi_hal_rtc_get_timestamp();
     uint32_t interval = interval_second_value[scheduler->interval] - 1; // zero index the interval
 
-    if((scheduler->mode != SchedulerTxModeImmediate) && !scheduler->previous_run_time) {
+    if((scheduler->tx_mode != SchedulerTxModeImmediate) && !scheduler->previous_run_time) {
         scheduler->previous_run_time = current_time;
         scheduler->countdown = interval;
         return false; // Don't trigger immediately
@@ -172,7 +172,7 @@ FileTxType scheduler_get_file_type(Scheduler* scheduler) {
 
 SchedulerTxMode scheduler_get_mode(Scheduler* scheduler) {
     furi_assert(scheduler);
-    return scheduler->mode;
+    return scheduler->tx_mode;
 }
 
 uint16_t scheduler_get_tx_delay(Scheduler* scheduler) {
