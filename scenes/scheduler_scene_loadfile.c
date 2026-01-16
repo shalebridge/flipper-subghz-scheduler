@@ -33,11 +33,7 @@ static int count_playlist_items(Storage* storage, const char* file_path) {
 
 bool check_file_extension(const char* filename) {
     const char* extension = strrchr(filename, '.');
-    if(extension == NULL) {
-        return false;
-    } else {
-        return !strcmp(extension, ".txt") || !strcmp(extension, ".sub");
-    }
+    return !strcmp(extension, ".txt") || !strcmp(extension, ".sub");
 }
 
 static bool load_protocol_from_file(SchedulerApp* app) {
@@ -46,20 +42,21 @@ static bool load_protocol_from_file(SchedulerApp* app) {
     DialogsFileBrowserOptions browser_options;
     dialog_file_browser_set_basic_options(&browser_options, ".sub|.txt", &I_sub1_10px);
     browser_options.skip_assets = true;
+    browser_options.hide_ext = false;
     browser_options.base_path = SUBGHZ_APP_FOLDER;
-    furi_string_set(app->file_path, SUBGHZ_APP_FOLDER);
+    furi_string_set(app->tx_file_path, SUBGHZ_APP_FOLDER);
 
     // Input events and views are managed by file_select
-    bool res =
-        dialog_file_browser_show(app->dialogs, app->file_path, app->file_path, &browser_options);
+    bool ok = dialog_file_browser_show(
+        app->dialogs, app->tx_file_path, app->tx_file_path, &browser_options);
 
-    if(res) {
+    if(ok) {
         Storage* storage = furi_record_open(RECORD_STORAGE);
         if(!storage) {
             dialog_message_show_storage_error(app->dialogs, "Storage unavailable");
             return false;
         }
-        const char* filestr = furi_string_get_cstr(app->file_path);
+        const char* filestr = furi_string_get_cstr(app->tx_file_path);
         const char* ext = strrchr(filestr, '.');
         int list_count = 0;
 
@@ -72,9 +69,11 @@ static bool load_protocol_from_file(SchedulerApp* app) {
         }
         scheduler_set_file(app->scheduler, filestr, list_count);
         furi_record_close(RECORD_STORAGE);
+        return true;
     }
+    furi_string_reset(app->tx_file_path);
 
-    return res;
+    return false;
 }
 
 void scheduler_scene_load_on_enter(void* context) {

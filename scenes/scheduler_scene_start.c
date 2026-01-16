@@ -1,4 +1,6 @@
-#include "scheduler_scene_start.h"
+#include "helpers/scheduler_settings_io.h"
+#include "src/scheduler_app_i.h"
+#include "scheduler_scene_loadfile.h"
 
 #include <furi_hal_power.h>
 #include <furi_hal_usb.h>
@@ -12,10 +14,6 @@
 
 typedef uint8_t (*SchedulerGetIdxFn)(const Scheduler* scheduler);
 typedef void (*SchedulerSetIdxFn)(Scheduler* scheduler, uint8_t idx);
-
-inline uint8_t clamp_u8(uint8_t v, uint8_t max_exclusive) {
-    return (max_exclusive == 0) ? 0 : (v < max_exclusive ? v : 0);
-}
 
 static uint8_t get_interval_idx(const Scheduler* s) {
     return scheduler_get_interval((Scheduler*)s);
@@ -80,7 +78,6 @@ static VariableItem* add_scheduler_option_item(
     VariableItem* item = variable_item_list_add(list, label, count, on_change, app);
 
     uint8_t idx = get_idx(app->scheduler);
-    idx = clamp_u8(idx, count);
 
     variable_item_set_current_value_index(item, idx);
     variable_item_set_current_value_text(item, text_table[idx]);
@@ -150,7 +147,12 @@ void scheduler_scene_start_on_enter(void* context) {
     VariableItemList* var_item_list = app->var_item_list;
     char buffer[20];
 
-    scheduler_reset(app->scheduler);
+    scheduler_time_reset(app->scheduler);
+    if(app->should_reset) {
+        scheduler_full_reset(app->scheduler);
+        furi_string_reset(app->tx_file_path);
+        app->should_reset = false;
+    }
 
     variable_item_list_set_enter_callback(
         var_item_list, scheduler_scene_start_var_list_enter_callback, app);
@@ -217,25 +219,26 @@ void scheduler_scene_start_on_enter(void* context) {
         radio_device_text);
 
     VariableItem* item = variable_item_list_add(var_item_list, "Select File", 0, NULL, app);
-    if(check_file_extension(furi_string_get_cstr(app->file_path))) {
-        scene_manager_set_scene_state(
-            app->scene_manager, SchedulerSceneStart, SchedulerStartRunEvent);
-        if(scheduler_get_file_type(app->scheduler) == SchedulerFileTypeSingle) {
-            variable_item_set_current_value_text(item, "[Single]");
-        } else if(scheduler_get_file_type(app->scheduler) == SchedulerFileTypePlaylist) {
-            snprintf(
-                buffer,
-                sizeof(buffer),
-                "[Playlist of %d]",
-                scheduler_get_list_count(app->scheduler));
-            variable_item_set_current_value_text(item, buffer);
+    if(!furi_string_empty(app->tx_file_path)) {
+        if(check_file_extension(furi_string_get_cstr(app->tx_file_path))) {
+            scene_manager_set_scene_state(
+                app->scene_manager, SchedulerSceneStart, SchedulerStartRunEvent);
+            if(scheduler_get_file_type(app->scheduler) == SchedulerFileTypeSingle) {
+                variable_item_set_current_value_text(item, "[Single]");
+            } else if(scheduler_get_file_type(app->scheduler) == SchedulerFileTypePlaylist) {
+                snprintf(
+                    buffer,
+                    sizeof(buffer),
+                    "[Playlist of %d]",
+                    scheduler_get_list_count(app->scheduler));
+                variable_item_set_current_value_text(item, buffer);
+            }
         }
+
+        variable_item_list_add(var_item_list, "Save Schedule...", 0, NULL, app);
+
+        variable_item_list_add(var_item_list, "Start", 0, NULL, app);
     }
-
-    VariableItem* save_item = variable_item_list_add(var_item_list, "Save Schedule", 0, NULL, app);
-    variable_item_set_current_value_text(save_item, "[Coming Soon]");
-
-    variable_item_list_add(var_item_list, "Start", 0, NULL, app);
 
     variable_item_list_set_selected_item(
         var_item_list, scene_manager_get_scene_state(app->scene_manager, SchedulerSceneStart));
@@ -249,7 +252,7 @@ bool scheduler_scene_start_on_event(void* context, SceneManagerEvent event) {
 
     if(event.type == SceneManagerEventTypeCustom) {
         if(event.event == SchedulerStartRunEvent) {
-            if(!check_file_extension(furi_string_get_cstr(app->file_path))) {
+            if(furi_string_empty(app->tx_file_path)) {
                 dialog_message_show_storage_error(
                     app->dialogs, "Please select\nplaylist (*.txt) or\n *.sub file!");
             } else {
@@ -258,12 +261,7 @@ bool scheduler_scene_start_on_event(void* context, SceneManagerEvent event) {
         } else if(event.event == SchedulerStartEventSelectFile) {
             scene_manager_next_scene(app->scene_manager, SchedulerSceneLoadFile);
         } else if(event.event == SchedulerStartEventSaveSchedule) {
-            DialogMessage* msg = dialog_message_alloc();
-            dialog_message_set_header(msg, "Save Schedule", 64, 8, AlignCenter, AlignTop);
-            dialog_message_set_text(msg, "Not implemented yet.", 64, 28, AlignCenter, AlignTop);
-            dialog_message_set_buttons(msg, NULL, "OK", NULL);
-            dialog_message_show(app->dialogs, msg);
-            dialog_message_free(msg);
+            scene_manager_next_scene(app->scene_manager, SchedulerSceneSaveName);
         }
         consumed = true;
     }

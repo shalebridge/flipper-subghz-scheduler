@@ -21,14 +21,14 @@ struct ScheduleTxRun {
     FuriString* protocol;
     FuriString* preset;
     FuriString* data;
-    bool filetype;
     uint32_t ms_delay_delta;
     uint32_t frequency;
     uint16_t tx_delay;
+    bool filetype;
 };
 
 static ScheduleTxRun* tx_run_alloc() {
-    ScheduleTxRun* tx_run = malloc(sizeof(ScheduleTxRun));
+    ScheduleTxRun* tx_run = calloc(1, sizeof(ScheduleTxRun));
     tx_run->storage = furi_record_open(RECORD_STORAGE);
     tx_run->fff_head = flipper_format_file_alloc(tx_run->storage);
     tx_run->fff_file = flipper_format_file_alloc(tx_run->storage);
@@ -106,10 +106,11 @@ static int32_t scheduler_tx(void* context) {
 
     tx_run->filetype = scheduler_get_file_type(app->scheduler);
     if(tx_run->filetype == SchedulerFileTypePlaylist) {
-        flipper_format_file_open_existing(tx_run->fff_head, furi_string_get_cstr(app->file_path));
+        flipper_format_file_open_existing(
+            tx_run->fff_head, furi_string_get_cstr(app->tx_file_path));
         flipper_format_read_string(tx_run->fff_head, "sub", tx_run->data);
     } else {
-        furi_string_set_str(tx_run->data, furi_string_get_cstr(app->file_path));
+        furi_string_set_str(tx_run->data, furi_string_get_cstr(app->tx_file_path));
     }
 
     //uint16_t list_count = scheduler_get_list_count(app->scheduler);
@@ -192,6 +193,9 @@ static void
 }
 
 void scheduler_start_tx(SchedulerApp* app) {
+    if(app->thread || app->is_transmitting) {
+        return;
+    }
     app->thread = furi_thread_alloc_ex("SchedulerTxThread", 1024, scheduler_tx, app);
     furi_thread_set_state_callback(app->thread, scheduler_thread_state_callback);
     furi_thread_set_state_context(app->thread, app);

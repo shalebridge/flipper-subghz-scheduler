@@ -53,12 +53,15 @@ bool scheduler_scene_menu_on_event(void* context, SceneManagerEvent event) {
 
         switch(event.event) {
         case SchedulerMenuItemNewSchedule:
+            app->should_reset = true;
             scene_manager_next_scene(app->scene_manager, SchedulerSceneStart);
             return true;
         case SchedulerMenuItemLoadSchedule:
+            app->should_reset = false;
             scene_manager_next_scene(app->scene_manager, SchedulerSceneLoadSchedule);
             return true;
         case SchedulerMenuItemAbout:
+            app->should_reset = false;
             scene_manager_next_scene(app->scene_manager, SchedulerSceneAbout);
             return true;
         default:

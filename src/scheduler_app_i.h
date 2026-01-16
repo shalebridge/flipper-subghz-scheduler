@@ -6,6 +6,7 @@
 #include "scheduler_custom_event.h"
 #include "subghz_scheduler.h"
 #include "views/scheduler_run_view.h"
+#include "helpers/scheduler_custom_file_types.h"
 
 #include <gui/gui.h>
 #include <gui/view_dispatcher.h>
@@ -13,6 +14,8 @@
 #include <gui/modules/submenu.h>
 #include <gui/modules/widget.h>
 #include <gui/modules/variable_item_list.h>
+#include <gui/modules/text_input.h>
+#include <gui/modules/popup.h>
 #include <expansion/expansion.h>
 #include <dialogs/dialogs.h>
 #include <notification/notification_messages.h>
@@ -42,11 +45,15 @@ struct SchedulerApp {
     Widget* about_widget;
     FuriThread* thread;
     Scheduler* scheduler;
-    FuriString* file_path;
-
+    FuriString* tx_file_path;
+    FuriString* save_dir;
+    Popup* popup;
+    TextInput* text_input;
     SchedulerRunView* run_view;
 
+    char save_name_tmp[SCHEDULER_MAX_LEN_NAME];
     volatile bool is_transmitting;
+    bool should_reset;
     bool ext_radio_present;
 };
 
@@ -55,5 +62,6 @@ typedef enum {
     SchedulerAppViewVarItemList,
     SchedulerAppViewRunSchedule,
     SchedulerAppViewAbout,
-    SchedulerAppViewExitConfirm,
+    SchedulerAppViewTextInput,
+    SchedulerAppViewPopup,
 } SchedulerAppView;

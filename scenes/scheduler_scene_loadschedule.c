@@ -1,28 +1,50 @@
 #include "src/scheduler_app_i.h"
+#include "helpers/scheduler_settings_io.h"
 
+#include <subghz_scheduler_icons.h>
 #include <dialogs/dialogs.h>
 
 #define TAG "SubGHzSchedulerLoadSchedule"
 
+static bool scheduler_load_schedule_dialog_and_apply(SchedulerApp* app) {
+    DialogsFileBrowserOptions browser_options;
+    dialog_file_browser_set_basic_options(&browser_options, ".sch", &I_sub1_10px);
+
+    browser_options.base_path = SCHEDULER_APP_FOLDER;
+
+    FuriString* settings_path = furi_string_alloc_set_str(SCHEDULER_APP_FOLDER);
+
+    bool ok =
+        dialog_file_browser_show(app->dialogs, settings_path, settings_path, &browser_options);
+
+    if(ok) {
+        ok = scheduler_settings_load_from_path(app, furi_string_get_cstr(settings_path));
+        if(!ok) {
+            dialog_message_show_storage_error(app->dialogs, "Failed to load schedule");
+        } //else {
+        // Highlight "Start" on the settings page
+        // IMPORTANT: set this to the ROW INDEX for Start, not a custom event.
+        //   scene_manager_set_scene_state(app->scene_manager, SchedulerSceneStart, 0);
+
+        // Jump to the settings screen
+        //    scene_manager_search_and_switch_to_another_scene(
+        //        app->scene_manager, SchedulerSceneStart);
+        // }
+    }
+
+    furi_string_free(settings_path);
+    return ok;
+}
+
 void scheduler_scene_loadschedule_on_enter(void* context) {
     furi_assert(context);
     SchedulerApp* app = context;
-
-    DialogMessage* msg = dialog_message_alloc();
-    dialog_message_set_header(msg, "Load Schedule", 64, 8, AlignCenter, AlignTop);
-    dialog_message_set_text(
-        msg,
-        "Not implemented yet.\nWill load options from a .txt file.",
-        64,
-        28,
-        AlignCenter,
-        AlignTop);
-    dialog_message_set_buttons(msg, NULL, "OK", NULL);
-
-    dialog_message_show(app->dialogs, msg);
-    dialog_message_free(msg);
-
-    scene_manager_previous_scene(app->scene_manager);
+    if(scheduler_load_schedule_dialog_and_apply(app)) {
+        // Need checking
+    }
+    //scene_manager_search_and_switch_to_previous_scene(app->scene_manager, SchedulerSceneStart);
+    scene_manager_set_scene_state(app->scene_manager, SchedulerSceneStart, 0);
+    scene_manager_search_and_switch_to_another_scene(app->scene_manager, SchedulerSceneStart);
 }
 
 bool scheduler_scene_loadschedule_on_event(void* context, SceneManagerEvent event) {
@@ -32,5 +54,7 @@ bool scheduler_scene_loadschedule_on_event(void* context, SceneManagerEvent even
 }
 
 void scheduler_scene_loadschedule_on_exit(void* context) {
-    UNUSED(context);
+    furi_assert(context);
+    SchedulerApp* app = context;
+    scene_manager_set_scene_state(app->scene_manager, SchedulerSceneStart, 0);
 }

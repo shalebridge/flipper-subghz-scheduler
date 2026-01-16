@@ -8,7 +8,8 @@ typedef struct Scheduler Scheduler;
 Scheduler* scheduler_alloc();
 void scheduler_free(Scheduler* scheduler);
 
-void scheduler_reset(Scheduler* scheduler);
+void scheduler_full_reset(Scheduler* scheduler);
+void scheduler_time_reset(Scheduler* scheduler);
 void scheduler_reset_previous_time(Scheduler* scheduler);
 
 bool scheduler_time_to_trigger(Scheduler* scheduler);

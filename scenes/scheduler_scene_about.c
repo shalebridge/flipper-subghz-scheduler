@@ -20,16 +20,16 @@ typedef enum {
 
 #define TEXT_ROW (7 + GUI_TEXTBOX_HEIGHT)
 
-static void about_button_cb(GuiButtonType btn, InputType type, void* context) {
-    if(type != InputTypeShort) return;
-
-    SchedulerApp* app = context;
-    if(btn == GuiButtonTypeRight) {
-        view_dispatcher_send_custom_event(app->view_dispatcher, AboutEvtNext);
-    } else if(btn == GuiButtonTypeLeft) {
-        view_dispatcher_send_custom_event(app->view_dispatcher, AboutEvtPrev);
-    }
-}
+//static void about_button_cb(GuiButtonType btn, InputType type, void* context) {
+//    if(type != InputTypeShort) return;
+//
+//    SchedulerApp* app = context;
+//    if(btn == GuiButtonTypeRight) {
+//        view_dispatcher_send_custom_event(app->view_dispatcher, AboutEvtNext);
+//    } else if(btn == GuiButtonTypeLeft) {
+//        view_dispatcher_send_custom_event(app->view_dispatcher, AboutEvtPrev);
+//    }
+//}
 
 static void about_build_page(SchedulerApp* app, AboutPage page) {
     widget_reset(app->about_widget);
@@ -125,15 +125,21 @@ static void about_build_page(SchedulerApp* app, AboutPage page) {
     }
 }
 
-void scheduler_scene_about_on_enter(void* context) {
+static bool about_input_callback(InputEvent* event, void* context) {
     furi_assert(context);
     SchedulerApp* app = context;
 
-    uint32_t page = scene_manager_get_scene_state(app->scene_manager, SchedulerSceneAbout);
-    if(page >= AboutPageCount) page = AboutPageMain;
+    if(event->type == InputTypeShort) {
+        if(event->key == InputKeyRight) {
+            view_dispatcher_send_custom_event(app->view_dispatcher, AboutEvtNext);
+            return true;
+        } else if(event->key == InputKeyLeft) {
+            view_dispatcher_send_custom_event(app->view_dispatcher, AboutEvtPrev);
+            return true;
+        }
+    }
 
-    about_build_page(app, (AboutPage)page);
-    view_dispatcher_switch_to_view(app->view_dispatcher, SchedulerAppViewAbout);
+    return false;
 }
 
 bool scheduler_scene_about_on_event(void* context, SceneManagerEvent event) {
@@ -142,12 +148,18 @@ bool scheduler_scene_about_on_event(void* context, SceneManagerEvent event) {
 
     if(event.type == SceneManagerEventTypeCustom) {
         uint32_t page = scene_manager_get_scene_state(app->scene_manager, SchedulerSceneAbout);
-        if(page >= AboutPageCount) page = AboutPageMain;
+        if(page >= AboutPageCount) {
+            page = AboutPageMain;
+        }
 
         if(event.event == AboutEvtNext) {
-            if(page + 1 < AboutPageCount) page++;
+            if(page + 1 < AboutPageCount) {
+                page++;
+            }
         } else if(event.event == AboutEvtPrev) {
-            if(page > 0) page--;
+            if(page > 0) {
+                page--;
+            }
         } else {
             return false;
         }
@@ -160,9 +172,30 @@ bool scheduler_scene_about_on_event(void* context, SceneManagerEvent event) {
     return false;
 }
 
+void scheduler_scene_about_on_enter(void* context) {
+    furi_assert(context);
+    SchedulerApp* app = context;
+
+    uint32_t page = scene_manager_get_scene_state(app->scene_manager, SchedulerSceneAbout);
+    if(page >= AboutPageCount) {
+        page = AboutPageMain;
+    }
+
+    View* view = widget_get_view(app->about_widget);
+    view_set_context(view, app);
+    view_set_input_callback(view, about_input_callback);
+
+    about_build_page(app, (AboutPage)page);
+    view_dispatcher_switch_to_view(app->view_dispatcher, SchedulerAppViewAbout);
+}
+
 void scheduler_scene_about_on_exit(void* context) {
     furi_assert(context);
     SchedulerApp* app = context;
+
+    View* view = widget_get_view(app->about_widget);
+    view_set_input_callback(view, NULL);
+    view_set_context(view, NULL);
 
     widget_reset(app->about_widget);
 
