@@ -1,14 +1,11 @@
 #include "scheduler_run.h"
 
-#include <devices/devices.h>
-#include <transmitter.h>
-#include <protocols/raw.h>
-#include <devices/cc1101_int/cc1101_int_interconnect.h>
 #include <applications/drivers/subghz/cc1101_ext/cc1101_ext_interconnect.h>
-
+#include <devices/cc1101_int/cc1101_int_interconnect.h>
+#include <devices/devices.h>
+#include <protocols/raw.h>
 #include <subghz_protocol_registry.h>
-
-#include <input/input.h>
+#include <transmitter.h>
 
 #define TAG "SubGhzSchedulerRun"
 

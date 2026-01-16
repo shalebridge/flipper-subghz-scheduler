@@ -1,11 +1,9 @@
-#include "scheduler_settings_io.h"
-
-#include "src/scheduler_app_i.h"
 #include "scheduler_custom_file_types.h"
+#include "scheduler_settings_io.h"
+#include "src/scheduler_app_i.h"
 
-#include <furi.h>
-#include <storage/storage.h>
 #include <flipper_format/flipper_format.h>
+#include <furi.h>
 
 #define TAG "SchedulerSettingsIO"
 
@@ -142,10 +140,9 @@ bool scheduler_settings_load_from_path(SchedulerApp* app, const char* full_path)
         scheduler_set_tx_repeats(app->scheduler, repeats_idx);
         scheduler_set_mode(app->scheduler, (SchedulerTxMode)mode_idx);
         scheduler_set_tx_delay(app->scheduler, tx_delay_idx);
-        scheduler_set_radio(app->scheduler, radio_idx);
+        scheduler_set_radio(app->scheduler, app->ext_radio_present ? radio_idx : 0);
 
         if(flipper_format_read_string(ff, KEY_SCHEDULE_FILE, sched_file)) {
-            // Update app file_path WITHOUT losing the scheduler settings file path
             furi_string_set(app->tx_file_path, furi_string_get_cstr(sched_file));
 
             uint32_t file_type;
@@ -156,8 +153,10 @@ bool scheduler_settings_load_from_path(SchedulerApp* app, const char* full_path)
             if((FileTxType)file_type == SchedulerFileTypeSingle) {
                 scheduler_set_file(app->scheduler, furi_string_get_cstr(sched_file), 0);
             } else {
-                // If list_count missing, fall back to "playlist" with count 1
-                if(list_count == 0) list_count = 1;
+                // If list_count missing, fallback to count 1
+                if(list_count == 0) {
+                    list_count = 1;
+                }
                 scheduler_set_file(
                     app->scheduler, furi_string_get_cstr(sched_file), (int8_t)list_count);
             }

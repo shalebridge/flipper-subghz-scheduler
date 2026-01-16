@@ -1,6 +1,6 @@
-#include "src/scheduler_app_i.h"
 #include "helpers/scheduler_custom_file_types.h"
 #include "helpers/scheduler_settings_io.h"
+#include "src/scheduler_app_i.h"
 
 #include <gui/modules/validators.h>
 

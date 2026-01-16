@@ -1,11 +1,7 @@
 #include "src/scheduler_app_i.h"
 
-#include <furi.h>
-#include <furi_hal.h>
-#include <lib/subghz/devices/devices.h>
-#include <types.h>
-
 #include <applications/drivers/subghz/cc1101_ext/cc1101_ext_interconnect.h>
+#include <lib/subghz/devices/devices.h>
 
 #define TAG "Sub-GHzSchedulerApp"
 

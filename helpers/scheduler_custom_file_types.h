@@ -1,3 +1,5 @@
+#pragma once
+
 #include <storage/storage.h>
 
 #define SCHEDULER_APP_SETTINGS_FILE_TYPE    "SubGHz Scheduler Settings file"

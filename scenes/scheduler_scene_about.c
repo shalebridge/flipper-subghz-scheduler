@@ -20,17 +20,6 @@ typedef enum {
 
 #define TEXT_ROW (7 + GUI_TEXTBOX_HEIGHT)
 
-//static void about_button_cb(GuiButtonType btn, InputType type, void* context) {
-//    if(type != InputTypeShort) return;
-//
-//    SchedulerApp* app = context;
-//    if(btn == GuiButtonTypeRight) {
-//        view_dispatcher_send_custom_event(app->view_dispatcher, AboutEvtNext);
-//    } else if(btn == GuiButtonTypeLeft) {
-//        view_dispatcher_send_custom_event(app->view_dispatcher, AboutEvtPrev);
-//    }
-//}
-
 static void about_build_page(SchedulerApp* app, AboutPage page) {
     widget_reset(app->about_widget);
 
@@ -75,9 +64,6 @@ static void about_build_page(SchedulerApp* app, AboutPage page) {
             AlignTop,
             FontSecondary,
             SCHEDULER_APP_VERSION);
-
-        //widget_add_button_element(
-        //    app->about_widget, GuiButtonTypeRight, "Next", about_button_cb, app);
     } else if(page == AboutPageInfo) {
         widget_add_string_element(
             app->about_widget,
@@ -103,11 +89,6 @@ static void about_build_page(SchedulerApp* app, AboutPage page) {
             AlignTop,
             FontSecondary,
             "his heating pad in the winter.");
-
-        //widget_add_button_element(
-        //    app->about_widget, GuiButtonTypeLeft, "Prev", about_button_cb, app);
-        //widget_add_button_element(
-        //    app->about_widget, GuiButtonTypeRight, "Next", about_button_cb, app);
     } else {
         widget_add_string_element(
             app->about_widget, 12, GUI_TEXTBOX_HEIGHT, AlignLeft, AlignTop, FontPrimary, "Nutmeg");
@@ -120,8 +101,6 @@ static void about_build_page(SchedulerApp* app, AboutPage page) {
             FontSecondary,
             "2009-");
         widget_add_icon_element(app->about_widget, GUI_DISPLAY_WIDTH - 64, 4, &I_cat_64px);
-        //widget_add_button_element(
-        //    app->about_widget, GuiButtonTypeLeft, "Prev", about_button_cb, app);
     }
 }
 

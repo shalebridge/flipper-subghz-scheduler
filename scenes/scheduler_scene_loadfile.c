@@ -1,13 +1,9 @@
-#include "src/scheduler_app_i.h"
 #include "scheduler_scene_loadfile.h"
+#include "src/scheduler_app_i.h"
 
-#include <furi_hal.h>
-#include <types.h>
-#include <dialogs/dialogs.h>
-#include <subghz_scheduler_icons.h>
-#include <lib/toolbox/stream/stream.h>
-//#include <lib/subghz/protocols/raw.h>
 #include <flipper_format/flipper_format_i.h>
+#include <subghz_scheduler_icons.h>
+#include <types.h>
 
 #define TAG "SubGHzSchedulerLoadFile"
 

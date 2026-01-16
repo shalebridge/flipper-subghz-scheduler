@@ -1,8 +1,7 @@
-#include "src/scheduler_app_i.h"
 #include "helpers/scheduler_settings_io.h"
+#include "src/scheduler_app_i.h"
 
 #include <subghz_scheduler_icons.h>
-#include <dialogs/dialogs.h>
 
 #define TAG "SubGHzSchedulerLoadSchedule"
 
@@ -21,15 +20,7 @@ static bool scheduler_load_schedule_dialog_and_apply(SchedulerApp* app) {
         ok = scheduler_settings_load_from_path(app, furi_string_get_cstr(settings_path));
         if(!ok) {
             dialog_message_show_storage_error(app->dialogs, "Failed to load schedule");
-        } //else {
-        // Highlight "Start" on the settings page
-        // IMPORTANT: set this to the ROW INDEX for Start, not a custom event.
-        //   scene_manager_set_scene_state(app->scene_manager, SchedulerSceneStart, 0);
-
-        // Jump to the settings screen
-        //    scene_manager_search_and_switch_to_another_scene(
-        //        app->scene_manager, SchedulerSceneStart);
-        // }
+        }
     }
 
     furi_string_free(settings_path);
@@ -42,7 +33,7 @@ void scheduler_scene_loadschedule_on_enter(void* context) {
     if(scheduler_load_schedule_dialog_and_apply(app)) {
         // Need checking
     }
-    //scene_manager_search_and_switch_to_previous_scene(app->scene_manager, SchedulerSceneStart);
+
     scene_manager_set_scene_state(app->scene_manager, SchedulerSceneStart, 0);
     scene_manager_search_and_switch_to_another_scene(app->scene_manager, SchedulerSceneStart);
 }

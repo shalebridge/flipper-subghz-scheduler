@@ -1,9 +1,9 @@
-#include <subghz_scheduler_icons.h>
-#include <gui/elements.h>
-
-#include "src/scheduler_run.h"
-#include "src/scheduler_app_i.h"
 #include "scheduler_run_view.h"
+#include "src/scheduler_app_i.h"
+#include "src/scheduler_run.h"
+
+#include <gui/elements.h>
+#include <subghz_scheduler_icons.h>
 
 #define TAG "SubGHzSchedulerRunView"
 
@@ -135,29 +135,13 @@ static void scheduler_run_view_draw_callback(Canvas* canvas, SchedulerRunViewMod
         furi_string_get_cstr(model->tx_countdown));
 }
 
-//bool scheduler_run_view_input(InputEvent* event, void* context) {
-//    furi_assert(context);
-//    UNUSED(event);
-//    return true;
-//}
-//
-//void scheduler_run_view_enter(void* context) {
-//    furi_assert(context);
-//}
-//
-//void scheduler_run_view_exit(void* context) {
-//    furi_assert(context);
-//}
-
 SchedulerRunView* scheduler_run_view_alloc() {
     SchedulerRunView* run_view = calloc(1, sizeof(SchedulerRunView));
     run_view->view = view_alloc();
     view_allocate_model(run_view->view, ViewModelTypeLocking, sizeof(SchedulerRunViewModel));
     view_set_context(run_view->view, run_view);
     view_set_draw_callback(run_view->view, (ViewDrawCallback)scheduler_run_view_draw_callback);
-    // view_set_input_callback(run_view->view, scheduler_run_view_input);
-    // view_set_enter_callback(run_view->view, scheduler_run_view_enter);
-    // view_set_exit_callback(run_view->view, scheduler_run_view_exit);
+
     with_view_model(
         run_view->view,
         SchedulerRunViewModel * model,

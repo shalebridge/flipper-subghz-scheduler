@@ -1,27 +1,27 @@
 #pragma once
 
+#include "helpers/scheduler_custom_file_types.h"
 #include "scenes/scheduler_scene.h"
 #include "scenes/scheduler_scene_settings.h"
 #include "scheduler_app.h"
 #include "scheduler_custom_event.h"
 #include "subghz_scheduler.h"
 #include "views/scheduler_run_view.h"
-#include "helpers/scheduler_custom_file_types.h"
 
-#include <gui/gui.h>
-#include <gui/view_dispatcher.h>
-#include <gui/scene_manager.h>
-#include <gui/modules/submenu.h>
-#include <gui/modules/widget.h>
-#include <gui/modules/variable_item_list.h>
-#include <gui/modules/text_input.h>
-#include <gui/modules/popup.h>
-#include <expansion/expansion.h>
 #include <dialogs/dialogs.h>
+#include <expansion/expansion.h>
+#include <gui/gui.h>
+#include <gui/modules/popup.h>
+#include <gui/modules/submenu.h>
+#include <gui/modules/text_input.h>
+#include <gui/modules/variable_item_list.h>
+#include <gui/modules/widget.h>
+#include <gui/scene_manager.h>
+#include <gui/view_dispatcher.h>
 #include <notification/notification_messages.h>
 
 #define SCHEDULER_APP_NAME    "Sub-GHz Scheduler"
-#define SCHEDULER_APP_VERSION "2.3"
+#define SCHEDULER_APP_VERSION "3.0"
 #define SCHEDULER_APP_AUTHOR  "Patrick Edwards"
 
 #define GUI_DISPLAY_HEIGHT 64

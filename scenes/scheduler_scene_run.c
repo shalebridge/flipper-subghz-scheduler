@@ -1,10 +1,7 @@
-#include <furi_hal.h>
-#include <lib/subghz/devices/devices.h>
-
 #include "src/scheduler_app_i.h"
 #include "src/scheduler_run.h"
-#include "views/scheduler_run_view.h"
-#include "scheduler_scene_run.h"
+
+#include <lib/subghz/devices/devices.h>
 
 void scheduler_scene_run_on_enter(void* context) {
     SchedulerApp* app = context;

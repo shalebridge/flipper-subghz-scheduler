@@ -1,12 +1,6 @@
 #include "helpers/scheduler_settings_io.h"
-#include "src/scheduler_app_i.h"
 #include "scheduler_scene_loadfile.h"
-
-#include <furi_hal_power.h>
-#include <furi_hal_usb.h>
-#include <furi_hal.h>
-#include <dolphin/dolphin.h>
-#include <devices/devices.h>
+#include "src/scheduler_app_i.h"
 
 #include <string.h>
 
