@@ -31,11 +31,12 @@ void scheduler_scene_loadschedule_on_enter(void* context) {
     furi_assert(context);
     SchedulerApp* app = context;
     if(scheduler_load_schedule_dialog_and_apply(app)) {
-        // Need checking
+        scene_manager_set_scene_state(app->scene_manager, SchedulerSceneStart, 0);
+        scene_manager_search_and_switch_to_another_scene(app->scene_manager, SchedulerSceneStart);
+        return;
     }
 
-    scene_manager_set_scene_state(app->scene_manager, SchedulerSceneStart, 0);
-    scene_manager_search_and_switch_to_another_scene(app->scene_manager, SchedulerSceneStart);
+    scene_manager_previous_scene(app->scene_manager);
 }
 
 bool scheduler_scene_loadschedule_on_event(void* context, SceneManagerEvent event) {
