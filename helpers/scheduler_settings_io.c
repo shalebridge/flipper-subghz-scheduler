@@ -29,6 +29,11 @@ typedef struct {
     uint8_t radio_idx;
 } SchedulerSettingsFields;
 
+const char* path_basename(const char* path) {
+    const char* slash = strrchr(path, '/');
+    return slash ? slash + 1 : path;
+}
+
 bool scheduler_settings_save_to_path(SchedulerApp* app, const char* full_path) {
     furi_assert(app);
 
@@ -100,7 +105,7 @@ bool scheduler_settings_save_to_path(SchedulerApp* app, const char* full_path) {
 static bool read_u8_u32(FlipperFormat* ff, const char* key, uint8_t* out) {
     uint32_t tmp = 0;
     if(!flipper_format_read_uint32(ff, key, &tmp, 1) || tmp > 0xFF) {
-        FURI_LOG_E(TAG, "Missing/invalid %s", KEY_INTERVAL_IDX);
+        FURI_LOG_E(TAG, "Missing/invalid %s", key);
         return false;
     }
     *out = (uint8_t)tmp;
