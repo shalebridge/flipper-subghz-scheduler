@@ -31,10 +31,10 @@ static void set_tx_count_idx(Scheduler* s, uint8_t idx) {
 }
 
 static uint8_t get_tx_mode_idx(const Scheduler* s) {
-    return (uint8_t)scheduler_get_mode((Scheduler*)s);
+    return (uint8_t)scheduler_get_tx_mode((Scheduler*)s);
 }
 static void set_tx_mode_idx(Scheduler* s, uint8_t idx) {
-    scheduler_set_mode(s, (SchedulerTxMode)idx);
+    scheduler_set_tx_mode(s, (SchedulerTxMode)idx);
 }
 
 static uint8_t get_tx_delay_idx(const Scheduler* s) {
@@ -119,7 +119,7 @@ static void scheduler_scene_start_set_mode(VariableItem* item) {
     SchedulerApp* app = variable_item_get_context(item);
     SchedulerTxMode index = variable_item_get_current_value_index(item);
     variable_item_set_current_value_text(item, tx_mode_text[index]);
-    scheduler_set_mode(app->scheduler, index);
+    scheduler_set_tx_mode(app->scheduler, index);
 }
 
 static void scheduler_scene_start_set_tx_delay(VariableItem* item) {

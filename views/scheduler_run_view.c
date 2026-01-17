@@ -193,7 +193,7 @@ void scheduler_run_view_set_static_fields(SchedulerRunView* run_view, Scheduler*
         run_view->view,
         SchedulerRunViewModel * model,
         {
-            furi_string_set(model->tx_mode, tx_mode_text[scheduler_get_mode(scheduler)]);
+            furi_string_set(model->tx_mode, tx_mode_text[scheduler_get_tx_mode(scheduler)]);
             furi_string_set(model->interval, interval_text[scheduler_get_interval(scheduler)]);
             furi_string_set(model->tx_count, tx_count_text[scheduler_get_tx_count(scheduler)]);
             furi_string_set(model->file_type, file_type_text[scheduler_get_file_type(scheduler)]);

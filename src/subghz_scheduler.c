@@ -73,7 +73,7 @@ void scheduler_set_tx_count(Scheduler* scheduler, uint8_t tx_count) {
     scheduler->tx_count = tx_count;
 }
 
-void scheduler_set_mode(Scheduler* scheduler, SchedulerTxMode tx_mode) {
+void scheduler_set_tx_mode(Scheduler* scheduler, SchedulerTxMode tx_mode) {
     furi_assert(scheduler);
     scheduler->tx_mode = tx_mode;
 }
@@ -170,7 +170,7 @@ FileTxType scheduler_get_file_type(Scheduler* scheduler) {
     return scheduler->file_type;
 }
 
-SchedulerTxMode scheduler_get_mode(Scheduler* scheduler) {
+SchedulerTxMode scheduler_get_tx_mode(Scheduler* scheduler) {
     furi_assert(scheduler);
     return scheduler->tx_mode;
 }
