@@ -3,11 +3,11 @@
 ## New Features
 - Add custom filetypes for settings and future enhancements.
 - Creates `subghz_scheduler` app folder for saving settings files.
+- Edit menu now has `Save Schedule` option to save settings.
 - New top level menu:
   - `New Schedule` -- Opens schedule edit window (previous startup menu).
   - `Load Schedule` -- Loads schedule settings from a custom file.
   - `About` -- General info.
-- Edit menu now has `Save Schedule` option to save settings.
 ## Bug-fix
 - Code cleanup and stability improvements.
 

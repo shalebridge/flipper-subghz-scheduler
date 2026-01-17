@@ -89,6 +89,9 @@ This app is tested against the current `dev` and `release` branches of the [OFW]
 
 It has also been tested against [Momentum 009](https://github.com/Next-Flip/Momentum-Firmware/releases/tag/mntm-009).
 
+> [!NOTE]
+> Currently not supported on Xtreme, as development of that firmware was officially [discontinued on Nov 18, 2024](https://github.com/Flipper-XFW/Xtreme-Firmware/commit/54619d013a120897eeade491decf4d1e95217c06). Since then, breaking changes were made to the Furi API. For those who still use Xtreme I am working on a separate port.
+
 ## Build
 
 These apps are built using [ufbt](https://pypi.org/project/ufbt/) - a subset of the flipper build tool (fbt) targeted at building apps. Install it with:
@@ -109,7 +112,10 @@ Build outputs are found in the `dist` directory for each application.
 - [ ] Convert preset intervals to custom H:M:S time. Ditto for millisecond delay between repeated transmissions.
 - [ ] Enable running in the background.
 - [ ] `TESTING IN PROGRESS` Enable interval delays for playlists. For example, turning on a light (playlist index 1), then 4 hours later turning it off (playlist index 2), and run that at another arbitrary interval. This can include custom playlist keys or custom app files.
-- [ ] Add 'alarm' mode, to set specific time for transmission.
+- [ ] `TESTING IN PROGRESS` Separate into multiple modes:  
+  - `Alarm`: To set specific time for transmission.
+  - `Periodic`: Current functionality.
+  - `Custom`: Periodic with custom breaks and tx count between transmissions.
 - [ ] More visual feedback of current transmission (like `SubGHz Playlist`).
 - [ ] Enable quitting from transmission. Currently, if back is pressed during playlist transmission, transmission will complete before exiting to main menu.
 - [ ] Options to select notifications on transmit (vibro, backlight, etc).
