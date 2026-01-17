@@ -19,7 +19,7 @@ static bool scheduler_load_schedule_dialog_and_apply(SchedulerApp* app) {
     if(ok) {
         ok = scheduler_settings_load_from_path(app, furi_string_get_cstr(settings_path));
         if(!ok) {
-            dialog_message_show_storage_error(app->dialogs, "Failed to load schedule");
+            dialog_message_show_storage_error(app->dialogs, "Wrong file format\nor corrupt file!");
         }
     }
 

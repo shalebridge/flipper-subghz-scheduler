@@ -42,6 +42,7 @@ bool scheduler_settings_save_to_path(SchedulerApp* app, const char* full_path) {
             furi_string_cat_str(message, full_path);
             dialog_message_show_storage_error(app->dialogs, furi_string_get_cstr(message));
             FURI_LOG_E(TAG, furi_string_get_cstr(message));
+            furi_string_free(message);
             break;
         }
 
@@ -87,6 +88,16 @@ bool scheduler_settings_save_to_path(SchedulerApp* app, const char* full_path) {
     return ok;
 }
 
+static bool read_u8_u32(FlipperFormat* ff, const char* key, uint8_t* out) {
+    uint32_t tmp = 0;
+    if(!flipper_format_read_uint32(ff, key, &tmp, 1) || tmp > 0xFF) {
+        FURI_LOG_E(TAG, "Missing/invalid %s", KEY_INTERVAL_IDX);
+        return false;
+    }
+    *out = (uint8_t)tmp;
+    return true;
+}
+
 bool scheduler_settings_load_from_path(SchedulerApp* app, const char* full_path) {
     furi_assert(app);
     furi_assert(full_path);
@@ -96,8 +107,8 @@ bool scheduler_settings_load_from_path(SchedulerApp* app, const char* full_path)
     Storage* storage = furi_record_open(RECORD_STORAGE);
     FlipperFormat* ff = flipper_format_file_alloc(storage);
 
-    FuriString* filetype = furi_string_alloc();
     FuriString* sched_file = furi_string_alloc();
+    FuriString* filetype = furi_string_alloc();
 
     do {
         if(!flipper_format_file_open_existing(ff, full_path)) {
@@ -122,18 +133,29 @@ bool scheduler_settings_load_from_path(SchedulerApp* app, const char* full_path)
         }
 
         uint8_t interval_idx;
+        if(!read_u8_u32(ff, KEY_INTERVAL_IDX, &interval_idx)) {
+            break;
+        }
         uint8_t timing_mode;
+        if(!read_u8_u32(ff, KEY_TIMING_MODE, &timing_mode)) {
+            break;
+        }
         uint8_t txcount_idx;
+        if(!read_u8_u32(ff, KEY_TXCOUNT_IDX, &txcount_idx)) {
+            break;
+        }
         uint8_t tx_mode_idx;
+        if(!read_u8_u32(ff, KEY_TX_MODE_IDX, &tx_mode_idx)) {
+            break;
+        }
         uint8_t tx_delay_idx;
+        if(!read_u8_u32(ff, KEY_TX_DELAY_IDX, &tx_delay_idx)) {
+            break;
+        }
         uint8_t radio_idx;
-
-        flipper_format_read_uint32(ff, KEY_INTERVAL_IDX, (uint32_t*)&interval_idx, 1);
-        flipper_format_read_uint32(ff, KEY_TIMING_MODE, (uint32_t*)&timing_mode, 1);
-        flipper_format_read_uint32(ff, KEY_TXCOUNT_IDX, (uint32_t*)&txcount_idx, 1);
-        flipper_format_read_uint32(ff, KEY_TX_MODE_IDX, (uint32_t*)&tx_mode_idx, 1);
-        flipper_format_read_uint32(ff, KEY_TX_DELAY_IDX, (uint32_t*)&tx_delay_idx, 1);
-        flipper_format_read_uint32(ff, KEY_RADIO_IDX, (uint32_t*)&radio_idx, 1);
+        if(!read_u8_u32(ff, KEY_RADIO_IDX, &radio_idx)) {
+            break;
+        }
 
         scheduler_set_interval(app->scheduler, interval_idx);
         scheduler_set_timing_mode(app->scheduler, timing_mode);
@@ -145,9 +167,10 @@ bool scheduler_settings_load_from_path(SchedulerApp* app, const char* full_path)
         if(flipper_format_read_string(ff, KEY_SCHEDULE_FILE, sched_file)) {
             furi_string_set(app->tx_file_path, furi_string_get_cstr(sched_file));
 
-            uint32_t file_type;
+            uint32_t file_type = SchedulerFileTypeSingle;
             flipper_format_read_uint32(ff, KEY_SCHEDULE_TYPE, &file_type, 1);
-            uint32_t list_count;
+
+            uint32_t list_count = 1;
             flipper_format_read_uint32(ff, KEY_LIST_COUNT, &list_count, 1);
 
             if((FileTxType)file_type == SchedulerFileTypeSingle) {
