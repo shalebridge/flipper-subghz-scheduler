@@ -52,6 +52,7 @@ struct SchedulerApp {
     TextInput* text_input;
     SchedulerRunView* run_view;
 
+    char popup_msg[80];
     char save_name_tmp[SCHEDULER_MAX_LEN_NAME];
     volatile bool is_transmitting;
     bool should_reset;

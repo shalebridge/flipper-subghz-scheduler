@@ -10,5 +10,6 @@ typedef enum {
     SchedulerStartEventSelectFile,
     SchedulerStartEventSaveSchedule,
     SchedulerStartRunEvent,
+    SchedulerEventPopupDone,
     SchedulerCustomEventErrorBack,
 } SchedulerCustomEvent;
