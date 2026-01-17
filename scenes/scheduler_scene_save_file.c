@@ -1,14 +1,11 @@
 #include "helpers/scheduler_custom_file_types.h"
+#include "helpers/scheduler_popup.h"
 #include "helpers/scheduler_settings_io.h"
 #include "src/scheduler_app_i.h"
 
 #include <gui/modules/validators.h>
 
 #define TAG "SchedulerSaveSettings"
-
-typedef enum {
-    SchedulerCustomEventPopupDone = 0xA1A1,
-} PopupCustomEvent;
 
 static void scheduler_scene_save_name_text_input_callback(void* context) {
     furi_assert(context);
@@ -45,27 +42,6 @@ void scheduler_scene_save_name_on_enter(void* context) {
     view_dispatcher_switch_to_view(app->view_dispatcher, SchedulerAppViewTextInput);
 }
 
-static void scheduler_popup_timeout_callback(void* context) {
-    SchedulerApp* app = context;
-    view_dispatcher_send_custom_event(app->view_dispatcher, SchedulerCustomEventPopupDone);
-}
-
-static void
-    scheduler_popup_success_show(SchedulerApp* app, const char* message, uint32_t timeout_ms) {
-    popup_reset(app->popup);
-
-    popup_set_header(app->popup, "Success", 64, 10, AlignCenter, AlignTop);
-    popup_set_text(app->popup, message, 64, 32, AlignCenter, AlignCenter);
-
-    popup_set_context(app->popup, app);
-    popup_set_callback(app->popup, scheduler_popup_timeout_callback);
-
-    popup_set_timeout(app->popup, timeout_ms);
-    popup_enable_timeout(app->popup);
-
-    view_dispatcher_switch_to_view(app->view_dispatcher, SchedulerAppViewPopup);
-}
-
 bool scheduler_scene_save_name_on_event(void* context, SceneManagerEvent event) {
     furi_assert(context);
     SchedulerApp* app = context;
@@ -85,10 +61,16 @@ bool scheduler_scene_save_name_on_event(void* context, SceneManagerEvent event) 
             if(!ok) {
                 dialog_message_show_storage_error(app->dialogs, "Failed to save settings!");
             } else {
-                scheduler_popup_success_show(app, "File saved.", 1200);
+                const char* full = furi_string_get_cstr(app->save_dir);
+                snprintf(
+                    app->popup_msg,
+                    sizeof(app->popup_msg),
+                    "File saved as:\n%s",
+                    path_basename(full));
+                scheduler_popup_success_show(app, app->popup_msg);
             }
             return true;
-        } else if(event.event == SchedulerCustomEventPopupDone) {
+        } else if(event.event == SchedulerEventPopupDone) {
             scene_manager_search_and_switch_to_previous_scene(
                 app->scene_manager, SchedulerSceneStart);
             return true;
