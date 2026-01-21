@@ -67,7 +67,7 @@ static void interval_view_draw(Canvas* canvas, void* context) {
 
     canvas_set_font(canvas, FontPrimary);
     canvas_draw_str_aligned(
-        canvas, GUI_DISPLAY_WIDTH / 2, 0, AlignCenter, AlignTop, "Set Interval");
+        canvas, GUI_DISPLAY_WIDTH / 2, 4, AlignCenter, AlignTop, "Set Interval");
 
     // Hours
     snprintf(buffer, sizeof(buffer), "%02u", model->time.h);
