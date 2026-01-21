@@ -43,7 +43,7 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
 <tr style="border:0px">
   <td style="border:0px" width="25%" align="left">
    Inter-transmission delay selectable<br>
-   from 0ms to 1000ms.
+   from 0ms to 1000ms in 50ms increments.
   </td>
    <td style="border:0px" width="20%"><img src="./screenshots/v3/txdelay.png" width="100%"></td>
   </tr>
