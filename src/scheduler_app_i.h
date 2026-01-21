@@ -7,6 +7,7 @@
 #include "scheduler_custom_event.h"
 #include "subghz_scheduler.h"
 #include "views/scheduler_run_view.h"
+#include "views/scheduler_interval_view.h"
 
 #include <dialogs/dialogs.h>
 #include <expansion/expansion.h>
@@ -27,7 +28,7 @@
 
 #define GUI_DISPLAY_HEIGHT 64
 #define GUI_DISPLAY_WIDTH  128
-#define GUI_MARGIN         5
+#define GUI_MARGIN         3
 #define GUI_TEXT_GAP       10
 
 #define GUI_TEXTBOX_HEIGHT 12
@@ -51,6 +52,7 @@ struct SchedulerApp {
     Popup* popup;
     TextInput* text_input;
     SchedulerRunView* run_view;
+    SchedulerIntervalView* interval_view;
 
     char popup_msg[80];
     char save_name_tmp[SCHEDULER_MAX_LEN_NAME];
@@ -66,4 +68,5 @@ typedef enum {
     SchedulerAppViewAbout,
     SchedulerAppViewTextInput,
     SchedulerAppViewPopup,
+    SchedulerAppViewInterval,
 } SchedulerAppView;

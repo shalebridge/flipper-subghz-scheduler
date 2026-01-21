@@ -18,7 +18,8 @@ typedef enum {
     AboutEvtPrev = 0xF101,
 } AboutEvt;
 
-#define TEXT_ROW (7 + GUI_TEXTBOX_HEIGHT)
+#define TEXT_ROW     (7 + GUI_TEXTBOX_HEIGHT)
+#define ABOUT_MARGIN 5
 
 static void about_build_page(SchedulerApp* app, AboutPage page) {
     widget_reset(app->about_widget);
@@ -30,7 +31,13 @@ static void about_build_page(SchedulerApp* app, AboutPage page) {
             app->about_widget, 4, 3, AlignLeft, AlignTop, FontPrimary, SCHEDULER_APP_NAME);
 
         widget_add_string_element(
-            app->about_widget, GUI_MARGIN, TEXT_ROW, AlignLeft, AlignTop, FontSecondary, "Author:");
+            app->about_widget,
+            ABOUT_MARGIN,
+            TEXT_ROW,
+            AlignLeft,
+            AlignTop,
+            FontSecondary,
+            "Author:");
         widget_add_string_element(
             app->about_widget,
             40,
@@ -50,7 +57,7 @@ static void about_build_page(SchedulerApp* app, AboutPage page) {
 
         widget_add_string_element(
             app->about_widget,
-            GUI_MARGIN,
+            ABOUT_MARGIN,
             TEXT_ROW + (GUI_TEXTBOX_HEIGHT * 2),
             AlignLeft,
             AlignTop,
@@ -67,7 +74,7 @@ static void about_build_page(SchedulerApp* app, AboutPage page) {
     } else if(page == AboutPageInfo) {
         widget_add_string_element(
             app->about_widget,
-            GUI_MARGIN,
+            ABOUT_MARGIN,
             GUI_TEXTBOX_HEIGHT,
             AlignLeft,
             AlignTop,
@@ -75,7 +82,7 @@ static void about_build_page(SchedulerApp* app, AboutPage page) {
             "Originally designed for my cat");
         widget_add_string_element(
             app->about_widget,
-            GUI_MARGIN,
+            ABOUT_MARGIN,
             GUI_TEXTBOX_HEIGHT * 2,
             AlignLeft,
             AlignTop,
@@ -83,7 +90,7 @@ static void about_build_page(SchedulerApp* app, AboutPage page) {
             "Nutmeg, to periodically reset");
         widget_add_string_element(
             app->about_widget,
-            GUI_MARGIN,
+            ABOUT_MARGIN,
             GUI_TEXTBOX_HEIGHT * 3,
             AlignLeft,
             AlignTop,
@@ -94,7 +101,7 @@ static void about_build_page(SchedulerApp* app, AboutPage page) {
             app->about_widget, 12, GUI_TEXTBOX_HEIGHT, AlignLeft, AlignTop, FontPrimary, "Nutmeg");
         widget_add_string_element(
             app->about_widget,
-            GUI_MARGIN,
+            ABOUT_MARGIN,
             GUI_TEXTBOX_HEIGHT * 3,
             AlignLeft,
             AlignTop,

@@ -10,7 +10,7 @@
 // Settings file keys
 #define KEY_FILETYPE      "FileType"
 #define KEY_VERSION       "FileVersion"
-#define KEY_INTERVAL_IDX  "IntervalIdx"
+#define KEY_INTERVAL_SEC  "IntervalSec"
 #define KEY_TIMING_MODE   "TimingModeIdx"
 #define KEY_TXCOUNT_IDX   "TxCountIdx"
 #define KEY_TX_MODE_IDX   "TxModeIdx"
@@ -21,7 +21,7 @@
 #define KEY_LIST_COUNT    "ListCount"
 
 typedef struct {
-    uint8_t interval_idx;
+    uint32_t interval_seconds;
     uint8_t timing_mode;
     uint8_t txcount_idx;
     uint8_t tx_mode_idx;
@@ -67,8 +67,8 @@ bool scheduler_settings_save_to_path(SchedulerApp* app, const char* full_path) {
 
         // Options
         uint32_t v = 0;
-        v = scheduler_get_interval(app->scheduler);
-        flipper_format_write_uint32(ff, KEY_INTERVAL_IDX, &v, 1);
+        v = scheduler_get_interval_seconds(app->scheduler);
+        flipper_format_write_uint32(ff, KEY_INTERVAL_SEC, &v, 1);
 
         v = scheduler_get_timing_mode(app->scheduler);
         flipper_format_write_uint32(ff, KEY_TIMING_MODE, &v, 1);
@@ -115,7 +115,11 @@ static bool read_u8_u32(FlipperFormat* ff, const char* key, uint8_t* out) {
 static bool scheduler_settings_read_required(FlipperFormat* ff, SchedulerSettingsFields* s) {
     *s = (SchedulerSettingsFields){0};
 
-    if(!read_u8_u32(ff, KEY_INTERVAL_IDX, &s->interval_idx)) return false;
+    uint32_t interval_sec = 0;
+    if(flipper_format_read_uint32(ff, KEY_INTERVAL_SEC, &interval_sec, 1)) {
+        if(interval_sec == 0u) interval_sec = 1u;
+        s->interval_seconds = interval_sec;
+    }
     if(!read_u8_u32(ff, KEY_TIMING_MODE, &s->timing_mode)) return false;
     if(!read_u8_u32(ff, KEY_TXCOUNT_IDX, &s->txcount_idx)) return false;
     if(!read_u8_u32(ff, KEY_TX_MODE_IDX, &s->tx_mode_idx)) return false;
@@ -165,7 +169,7 @@ bool scheduler_settings_load_from_path(SchedulerApp* app, const char* full_path)
             break;
         }
 
-        scheduler_set_interval(app->scheduler, settings.interval_idx);
+        scheduler_set_interval_seconds(app->scheduler, settings.interval_seconds);
         scheduler_set_timing_mode(app->scheduler, settings.timing_mode);
         scheduler_set_tx_count(app->scheduler, settings.txcount_idx);
         scheduler_set_tx_mode(app->scheduler, (SchedulerTxMode)settings.tx_mode_idx);

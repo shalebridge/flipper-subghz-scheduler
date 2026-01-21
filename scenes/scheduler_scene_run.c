@@ -9,7 +9,7 @@ void scheduler_scene_run_on_enter(void* context) {
     scheduler_time_reset(app->scheduler);
 
     scheduler_run_view_set_static_fields(app->run_view, app->scheduler);
-    scheduler_run_view_update_countdown(app->run_view, app->scheduler, app->is_transmitting);
+    scheduler_run_view_update_countdown(app->run_view, app->scheduler);
 
     subghz_devices_init();
     view_dispatcher_switch_to_view(app->view_dispatcher, SchedulerAppViewRunSchedule);
@@ -38,8 +38,7 @@ bool scheduler_scene_run_on_event(void* context, SceneManagerEvent event) {
 
     if(event.type == SceneManagerEventTypeTick) {
         if(update) {
-            scheduler_run_view_update_countdown(
-                app->run_view, app->scheduler, app->is_transmitting);
+            scheduler_run_view_update_countdown(app->run_view, app->scheduler);
 
             const bool trig = scheduler_time_to_trigger(app->scheduler);
             if(trig) {

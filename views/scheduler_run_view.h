@@ -2,7 +2,6 @@
 #include <gui/view.h>
 
 typedef struct Scheduler Scheduler;
-typedef struct SchedulerUIRunState SchedulerUIRunState;
 typedef struct SchedulerRunView SchedulerRunView;
 
 SchedulerRunView* scheduler_run_view_alloc();
@@ -13,7 +12,4 @@ uint8_t scheduler_run_view_get_tick_counter(SchedulerRunView* run_view);
 void scheduler_run_view_inc_tick_counter(SchedulerRunView* run_view);
 
 void scheduler_run_view_set_static_fields(SchedulerRunView* run_view, Scheduler* scheduler);
-void scheduler_run_view_update_countdown(
-    SchedulerRunView* run_view,
-    Scheduler* scheduler,
-    bool is_transmitting);
+void scheduler_run_view_update_countdown(SchedulerRunView* run_view, Scheduler* scheduler);

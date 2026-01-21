@@ -6,14 +6,20 @@
 struct Scheduler {
     uint32_t previous_run_time;
     uint32_t countdown;
+
     FileTxType file_type;
     SchedulerTxMode tx_mode;
     SchedulerTimingMode timing_mode;
+
     char* file_name;
+
     uint16_t tx_delay;
-    uint8_t interval;
+
+    uint32_t interval_seconds;
+
     uint8_t tx_count;
     uint8_t list_count;
+
     bool radio;
 };
 
@@ -28,6 +34,7 @@ void scheduler_free(Scheduler* scheduler) {
     furi_assert(scheduler);
     if(scheduler->file_name) {
         free(scheduler->file_name);
+        scheduler->file_name = NULL;
     }
     free(scheduler);
 }
@@ -42,7 +49,7 @@ void scheduler_full_reset(Scheduler* scheduler) {
     furi_assert(scheduler);
     scheduler_time_reset(scheduler);
     scheduler->tx_delay = SchedulerTxDelay100;
-    scheduler->interval = Interval10Sec;
+    scheduler->interval_seconds = 10; // Still default to 10 sec?
     scheduler->tx_count = 0;
     scheduler->file_type = SchedulerFileTypeSingle;
     scheduler->list_count = 1;
@@ -57,10 +64,17 @@ void scheduler_reset_previous_time(Scheduler* scheduler) {
     scheduler->previous_run_time = furi_hal_rtc_get_timestamp();
 }
 
-void scheduler_set_interval(Scheduler* scheduler, uint8_t interval) {
+void scheduler_set_interval_seconds(Scheduler* scheduler, uint32_t interval_seconds) {
     furi_assert(scheduler);
-    scheduler->interval = interval;
-    scheduler->countdown = interval_second_value[scheduler->interval];
+
+    if(interval_seconds == 0u) {
+        interval_seconds = 1u;
+    }
+
+    scheduler->interval_seconds = interval_seconds;
+
+    // Optionally reset countdown immediately so change applies right away:
+    scheduler->countdown = interval_seconds;
 }
 
 void scheduler_set_timing_mode(Scheduler* scheduler, bool tx_mode) {
@@ -118,7 +132,7 @@ void scheduler_set_file(Scheduler* scheduler, const char* file_name, int8_t list
 bool scheduler_time_to_trigger(Scheduler* scheduler) {
     furi_assert(scheduler);
     uint32_t current_time = furi_hal_rtc_get_timestamp();
-    uint32_t interval = interval_second_value[scheduler->interval] - 1; // zero index the interval
+    uint32_t interval = (scheduler->interval_seconds > 0) ? (scheduler->interval_seconds - 1) : 0;
 
     if((scheduler->tx_mode != SchedulerTxModeImmediate) && !scheduler->previous_run_time) {
         scheduler->previous_run_time = current_time;
@@ -135,24 +149,19 @@ bool scheduler_time_to_trigger(Scheduler* scheduler) {
     return false;
 }
 
-void scheduler_get_countdown_fmt(Scheduler* scheduler, char* buffer, uint8_t size) {
-    furi_assert(scheduler);
-
-    uint32_t h = scheduler->countdown / 3600;
-    uint32_t m = (scheduler->countdown / 60) % 60;
-    uint32_t s = scheduler->countdown % 60;
-
-    snprintf(buffer, size, "%02lu:%02lu:%02lu", h, m, s);
-}
-
 uint32_t scheduler_get_previous_time(Scheduler* scheduler) {
     furi_assert(scheduler);
     return scheduler->previous_run_time;
 }
 
-uint8_t scheduler_get_interval(Scheduler* scheduler) {
+uint32_t scheduler_get_interval_seconds(Scheduler* scheduler) {
     furi_assert(scheduler);
-    return scheduler->interval;
+    return scheduler->interval_seconds;
+}
+
+uint32_t scheduler_get_countdown_seconds(Scheduler* scheduler) {
+    furi_assert(scheduler);
+    return scheduler->countdown;
 }
 
 uint8_t scheduler_get_tx_count(Scheduler* scheduler) {

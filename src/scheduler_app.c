@@ -86,6 +86,13 @@ SchedulerApp* scheduler_app_alloc(void) {
         SchedulerAppViewRunSchedule,
         scheduler_run_view_get_view(app->run_view));
 
+    app->interval_view = scheduler_interval_view_alloc();
+    view_dispatcher_add_view(
+        app->view_dispatcher,
+        SchedulerAppViewInterval,
+        scheduler_interval_view_get_view(app->interval_view));
+    scheduler_interval_view_set_app(app->interval_view, app);
+
     app->scheduler = scheduler_alloc();
 
     // Test for external device
@@ -116,6 +123,9 @@ void scheduler_app_free(SchedulerApp* app) {
         furi_thread_free(app->thread);
         app->thread = NULL;
     }
+
+    view_dispatcher_remove_view(app->view_dispatcher, SchedulerAppViewInterval);
+    scheduler_interval_view_free(app->interval_view);
 
     view_dispatcher_remove_view(app->view_dispatcher, SchedulerAppViewRunSchedule);
     scheduler_run_view_free(app->run_view);
