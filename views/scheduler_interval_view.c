@@ -62,7 +62,7 @@ static void draw_block(
 
 static void interval_view_draw(Canvas* canvas, void* context) {
     IntervalModel* model = context;
-    char buffer[8];
+    char buffer[4];
 
     canvas_clear(canvas);
     canvas_set_color(canvas, ColorBlack);

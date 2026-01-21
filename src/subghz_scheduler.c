@@ -73,7 +73,7 @@ void scheduler_set_interval_seconds(Scheduler* scheduler, uint32_t interval_seco
 
     scheduler->interval_seconds = interval_seconds;
 
-    // Optionally reset countdown immediately so change applies right away:
+    // Optionally reset countdown immediately so change applies right away
     scheduler->countdown = interval_seconds;
 }
 

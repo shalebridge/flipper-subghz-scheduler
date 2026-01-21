@@ -87,13 +87,6 @@ static void scheduler_scene_start_var_list_enter_callback(void* context, uint32_
     }
 }
 
-//static void scheduler_scene_start_set_interval(VariableItem* item) {
-//    SchedulerApp* app = variable_item_get_context(item);
-//    uint8_t index = variable_item_get_current_value_index(item);
-//    variable_item_set_current_value_text(item, interval_text[index]);
-//    scheduler_set_interval(app->scheduler, index);
-//}
-
 static void scheduler_scene_start_set_timing(VariableItem* item) {
     SchedulerApp* app = variable_item_get_context(item);
     uint8_t index = variable_item_get_current_value_index(item);
@@ -144,23 +137,9 @@ void scheduler_scene_start_on_enter(void* context) {
     variable_item_list_set_enter_callback(
         var_item_list, scheduler_scene_start_var_list_enter_callback, app);
 
-    //add_scheduler_option_item(
-    //    var_item_list,
-    //    app,
-    //    "Interval:",
-    //    INTERVAL_COUNT,
-    //    scheduler_scene_start_set_interval,
-    //    get_interval_idx,
-    //    set_interval_idx,
-    //    interval_text);
-
-    /*
-     * Interval line: display-only, navigates to Interval editor on OK.
-     */
     VariableItem* interval_item = variable_item_list_add(var_item_list, "Interval:", 0, NULL, app);
     {
         char hms[12];
-        /* Will exist after we update scheduler core to store seconds */
         const uint32_t sec = scheduler_get_interval_seconds(app->scheduler);
         scheduler_seconds_to_hms_string(sec, hms, sizeof(hms));
         variable_item_set_current_value_text(interval_item, hms);

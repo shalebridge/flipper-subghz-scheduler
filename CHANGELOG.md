@@ -1,13 +1,14 @@
 # v3.0-rc (2026-01-16)
 
 ## New Features
-- Add custom filetypes for settings and future enhancements.
-- Creates `subghz_scheduler` app folder for saving settings files.
-- Edit menu now has `Save Schedule` option to save settings.
 - New top level menu:
   - `New Schedule` -- Opens schedule edit window (previous startup menu).
   - `Load Schedule` -- Loads schedule settings from a custom file.
   - `About` -- General info.
+- Creates `subghz_scheduler` app folder for saving files.
+- Edit menu now has `Save Schedule` option to save settings.
+- Add custom filetypes for settings and future enhancements.
+- Interval is now completely customizable instead of preset, from 00:00:01 to 99:59:59.
 ## Bug-fix
 - Code cleanup and stability improvements.
 

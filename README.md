@@ -109,7 +109,6 @@ Build outputs are found in the `dist` directory for each application.
 
 
 # To-Do
-- [ ] Convert preset intervals to custom H:M:S time. Ditto for millisecond delay between repeated transmissions.
 - [ ] Enable running in the background.
 - [ ] `TESTING IN PROGRESS` Enable interval delays for playlists. For example, turning on a light (playlist index 1), then 4 hours later turning it off (playlist index 2), and run that at another arbitrary interval. This can include custom playlist keys or custom app files.
 - [ ] `TESTING IN PROGRESS` Separate into multiple modes:  

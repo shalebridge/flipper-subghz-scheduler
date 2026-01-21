@@ -14,7 +14,4 @@ View* scheduler_interval_view_get_view(SchedulerIntervalView* v);
 void scheduler_interval_view_set_seconds(SchedulerIntervalView* v, uint32_t sec);
 uint32_t scheduler_interval_view_get_seconds(SchedulerIntervalView* v);
 
-//void scheduler_interval_view_clear_dirty(SchedulerIntervalView* v);
-//bool scheduler_interval_view_is_dirty(SchedulerIntervalView* v);
-
 void scheduler_interval_view_set_app(SchedulerIntervalView* v, SchedulerApp* app);
