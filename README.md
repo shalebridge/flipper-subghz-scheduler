@@ -1,6 +1,6 @@
 # SubGHz Scheduler
 
-A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub` or playlist `*.txt` files can be used. 
+A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub` or playlist `*.txt` files can be used for transmission, and schedule settings can be saved in a `*.sch` file.
 
 
 <table style="border:0px">
@@ -9,7 +9,7 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
     Schedule intervals in H:M:S format <br>
     from 00:00:01 to 99:59:59.
     </td>
-    <td style="border:0px" width="20%"><img src="./screenshots/v2.3/intervals.png" width="100%"></td>
+    <td style="border:0px" width="20%"><img src="./screenshots/v3/intervals.png" width="100%"></td>
   </tr>
   <tr style="border:0px">
     <td style="border:0px" width="25%" align="left">
@@ -19,7 +19,7 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
        <li>Precise: Interval is length of time from `START` of one transmission to `START` of next.</li>
      </ul>
     </td>
-    <td style="border:0px" width="20%"><img src="./screenshots/v2.3/timing.png" width="100%"></td>
+    <td style="border:0px" width="20%"><img src="./screenshots/v3/timing.png" width="100%"></td>
   </tr>
  <tr style="border:0px">
   <td style="border:0px" width="25%" align="left">
@@ -28,7 +28,7 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
   <li>x1, x2, x3, x4, x5, x6</li>
   </ul>
   </td>
-  <td style="border:0px" width="20%"><img src="./screenshots/v2.3/repeats.png" width="100%"></td>
+  <td style="border:0px" width="20%"><img src="./screenshots/v3/txcount.png" width="100%"></td>
 <tr style="border:0px">
   <td style="border:0px" width="25%" align="left">
     Transmission Modes:<br>
@@ -38,14 +38,14 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
   <li>One-Shot: Wait interval and transmits once.</li>
   </ul>
   </td>
-  <td style="border:0px" width="20%"><img src="./screenshots/v2.3/txmode.png" width="100%"></td>
+  <td style="border:0px" width="20%"><img src="./screenshots/v3/txmode.png" width="100%"></td>
  </tr>
 <tr style="border:0px">
   <td style="border:0px" width="25%" align="left">
    Inter-transmission delay selectable<br>
    from 0ms to 1000ms.
   </td>
-   <td style="border:0px" width="20%"><img src="./screenshots/v2.3/txdelay.png" width="100%"></td>
+   <td style="border:0px" width="20%"><img src="./screenshots/v3/txdelay.png" width="100%"></td>
   </tr>
   <tr style="border:0px">
   <td style="border:0px" width="25%" align="left">
@@ -55,7 +55,13 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
     <li>External (When Present)</li>
    </ul>
   </td>
-   <td style="border:0px" width="20%"><img src="./screenshots/v2.3/radio.png" width="100%"></td>
+   <td style="border:0px" width="20%"><img src="./screenshots/v3/radio.png" width="100%"></td>
+  </tr>
+    <tr style="border:0px">
+  <td style="border:0px" width="25%" align="left">
+   Save settings for later use.<br>
+  </td>
+   <td style="border:0px" width="20%"><img src="./screenshots/v3/saveschedule.png" width="100%"></td>
   </tr>
   <tr style="border:0px">
   <td style="border:0px" width="25%" align="left">
@@ -69,7 +75,7 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
       <li>TX Interval Countdown</li>
     </ul>
   </td>
-   <td style="border:0px" width="20%"><img src="./screenshots/v2.3/rundisplay.png" width="100%"></td>
+   <td style="border:0px" width="20%"><img src="./screenshots/v3/rundisplay.png" width="100%"></td>
   </tr>
 </table>
 
