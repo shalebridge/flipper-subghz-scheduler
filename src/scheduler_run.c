@@ -110,8 +110,6 @@ static int32_t scheduler_tx(void* context) {
         furi_string_set_str(tx_run->data, furi_string_get_cstr(app->tx_file_path));
     }
 
-    //uint16_t list_count = scheduler_get_list_count(app->scheduler);
-    //uint16_t tx_count = 1;
     tx_run->tx_delay_ms = scheduler_get_tx_delay_ms(app->scheduler);
     do {
         if(!flipper_format_file_open_existing(
@@ -154,11 +152,8 @@ static int32_t scheduler_tx(void* context) {
 
             transmit(app, device, transmitter);
 
-            //if(tx_count < list_count) {
             furi_delay_ms(tx_run->tx_delay_ms);
-            //}
         }
-        //tx_count++;
     } while(tx_run->filetype == SchedulerFileTypePlaylist &&
             flipper_format_read_string(tx_run->fff_head, "sub", tx_run->data));
 
