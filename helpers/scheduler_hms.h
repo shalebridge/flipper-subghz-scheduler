@@ -14,4 +14,3 @@ void scheduler_seconds_to_hms_string(uint32_t seconds, char* out, size_t out_siz
 
 void scheduler_seconds_to_hms(uint32_t seconds, SchedulerHMS* time);
 uint32_t scheduler_hms_to_seconds(SchedulerHMS* time);
-//bool scheduler_hms_to_seconds(const char* hms, uint32_t* out_seconds);

@@ -14,7 +14,7 @@
 #define KEY_TIMING_MODE   "TimingModeIdx"
 #define KEY_TXCOUNT_IDX   "TxCountIdx"
 #define KEY_TX_MODE_IDX   "TxModeIdx"
-#define KEY_TX_DELAY_IDX  "TxDelayIdx"
+#define KEY_TX_DELAY_MS   "TxDelayMs"
 #define KEY_RADIO_IDX     "RadioIdx"
 #define KEY_SCHEDULE_FILE "TxFile"
 #define KEY_SCHEDULE_TYPE "TxFileType"
@@ -22,10 +22,10 @@
 
 typedef struct {
     uint32_t interval_seconds;
+    uint16_t tx_delay_ms;
     uint8_t timing_mode;
     uint8_t txcount_idx;
     uint8_t tx_mode_idx;
-    uint8_t tx_delay_idx;
     uint8_t radio_idx;
 } SchedulerSettingsFields;
 
@@ -79,8 +79,8 @@ bool scheduler_settings_save_to_path(SchedulerApp* app, const char* full_path) {
         v = scheduler_get_tx_mode(app->scheduler);
         flipper_format_write_uint32(ff, KEY_TX_MODE_IDX, &v, 1);
 
-        v = scheduler_get_tx_delay_index(app->scheduler);
-        flipper_format_write_uint32(ff, KEY_TX_DELAY_IDX, &v, 1);
+        v = scheduler_get_tx_delay_ms(app->scheduler);
+        flipper_format_write_uint32(ff, KEY_TX_DELAY_MS, &v, 1);
 
         v = scheduler_get_radio(app->scheduler);
         flipper_format_write_uint32(ff, KEY_RADIO_IDX, &v, 1);
@@ -102,10 +102,28 @@ bool scheduler_settings_save_to_path(SchedulerApp* app, const char* full_path) {
     return ok;
 }
 
-static bool read_u8_u32(FlipperFormat* ff, const char* key, uint8_t* out) {
+static bool read_u32(FlipperFormat* ff, const char* key, uint32_t* out) {
     uint32_t tmp = 0;
-    if(!flipper_format_read_uint32(ff, key, &tmp, 1) || tmp > 0xFF) {
+    if(!flipper_format_read_uint32(ff, key, &tmp, 1)) {
         FURI_LOG_E(TAG, "Missing/invalid %s", key);
+        return false;
+    }
+    *out = tmp;
+    return true;
+}
+
+static bool read_u16(FlipperFormat* ff, const char* key, uint16_t* out) {
+    uint32_t tmp = 0;
+    if(!read_u32(ff, key, &tmp)) {
+        return false;
+    }
+    *out = (uint16_t)tmp;
+    return true;
+}
+
+static bool read_u8(FlipperFormat* ff, const char* key, uint8_t* out) {
+    uint32_t tmp = 0;
+    if(!read_u32(ff, key, &tmp)) {
         return false;
     }
     *out = (uint8_t)tmp;
@@ -113,18 +131,12 @@ static bool read_u8_u32(FlipperFormat* ff, const char* key, uint8_t* out) {
 }
 
 static bool scheduler_settings_read_required(FlipperFormat* ff, SchedulerSettingsFields* s) {
-    *s = (SchedulerSettingsFields){0};
-
-    uint32_t interval_sec = 0;
-    if(flipper_format_read_uint32(ff, KEY_INTERVAL_SEC, &interval_sec, 1)) {
-        if(interval_sec == 0u) interval_sec = 1u;
-        s->interval_seconds = interval_sec;
-    }
-    if(!read_u8_u32(ff, KEY_TIMING_MODE, &s->timing_mode)) return false;
-    if(!read_u8_u32(ff, KEY_TXCOUNT_IDX, &s->txcount_idx)) return false;
-    if(!read_u8_u32(ff, KEY_TX_MODE_IDX, &s->tx_mode_idx)) return false;
-    if(!read_u8_u32(ff, KEY_TX_DELAY_IDX, &s->tx_delay_idx)) return false;
-    if(!read_u8_u32(ff, KEY_RADIO_IDX, &s->radio_idx)) return false;
+    if(!read_u32(ff, KEY_INTERVAL_SEC, &s->interval_seconds)) return false;
+    if(!read_u8(ff, KEY_TIMING_MODE, &s->timing_mode)) return false;
+    if(!read_u8(ff, KEY_TXCOUNT_IDX, &s->txcount_idx)) return false;
+    if(!read_u8(ff, KEY_TX_MODE_IDX, &s->tx_mode_idx)) return false;
+    if(!read_u16(ff, KEY_TX_DELAY_MS, &s->tx_delay_ms)) return false;
+    if(!read_u8(ff, KEY_RADIO_IDX, &s->radio_idx)) return false;
 
     return true;
 }
@@ -173,7 +185,7 @@ bool scheduler_settings_load_from_path(SchedulerApp* app, const char* full_path)
         scheduler_set_timing_mode(app->scheduler, settings.timing_mode);
         scheduler_set_tx_count(app->scheduler, settings.txcount_idx);
         scheduler_set_tx_mode(app->scheduler, (SchedulerTxMode)settings.tx_mode_idx);
-        scheduler_set_tx_delay(app->scheduler, settings.tx_delay_idx);
+        scheduler_set_tx_delay_ms(app->scheduler, settings.tx_delay_ms);
         scheduler_set_radio(app->scheduler, app->ext_radio_present ? settings.radio_idx : 0);
 
         if(flipper_format_read_string(ff, KEY_SCHEDULE_FILE, sched_file)) {

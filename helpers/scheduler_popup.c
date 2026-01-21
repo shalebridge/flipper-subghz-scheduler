@@ -1,5 +1,4 @@
 #include "scheduler_popup.h"
-#include <subghz_scheduler_icons.h>
 
 static void scheduler_popup_timeout_callback(void* context) {
     SchedulerApp* app = context;

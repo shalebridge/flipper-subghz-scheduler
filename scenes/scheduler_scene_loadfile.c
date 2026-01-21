@@ -2,7 +2,6 @@
 #include "src/scheduler_app_i.h"
 
 #include <flipper_format/flipper_format_i.h>
-#include <subghz_scheduler_icons.h>
 #include <types.h>
 
 #define TAG "SubGHzSchedulerLoadFile"

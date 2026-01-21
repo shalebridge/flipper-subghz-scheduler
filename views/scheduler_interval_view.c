@@ -41,9 +41,8 @@ static void draw_block(
 
     if(state != EditStateNone) {
         if(state == EditStateActiveEditing) {
-            canvas_draw_icon(canvas, x + (int32_t)w / 2 - 2, y - 4, &I_SmallArrowUp_3x5);
-            canvas_draw_icon(
-                canvas, x + (int32_t)w / 2 - 2, y + (int32_t)h + 1, &I_SmallArrowDown_3x5);
+            canvas_draw_icon(canvas, x + w / 2 - 2, y - 4, &I_SmallArrowUp_3x5);
+            canvas_draw_icon(canvas, x + w / 2 - 2, y + h + 1, &I_SmallArrowDown_3x5);
         }
         canvas_draw_rbox(canvas, x, y, w, h, 1);
         canvas_set_color(canvas, ColorWhite);
@@ -52,8 +51,7 @@ static void draw_block(
     }
 
     canvas_set_font(canvas, font);
-    canvas_draw_str_aligned(
-        canvas, x + (int32_t)w / 2, y + (int32_t)h / 2, AlignCenter, AlignCenter, text);
+    canvas_draw_str_aligned(canvas, x + w / 2, y + h / 2, AlignCenter, AlignCenter, text);
 
     if(state != EditStateNone) {
         canvas_set_color(canvas, ColorBlack);

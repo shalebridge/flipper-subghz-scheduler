@@ -3,9 +3,6 @@
 #include "scheduler_scene_loadfile.h"
 #include "src/scheduler_app_i.h"
 
-#include <string.h>
-#include <stdio.h>
-
 #define TAG "Sub-GHzSchedulerSceneStart"
 
 typedef uint8_t (*SchedulerGetIdxFn)(const Scheduler* scheduler);
@@ -30,13 +27,6 @@ static uint8_t get_tx_mode_idx(const Scheduler* s) {
 }
 static void set_tx_mode_idx(Scheduler* s, uint8_t idx) {
     scheduler_set_tx_mode(s, (SchedulerTxMode)idx);
-}
-
-static uint8_t get_tx_delay_idx(const Scheduler* s) {
-    return scheduler_get_tx_delay_index((Scheduler*)s);
-}
-static void set_tx_delay_idx(Scheduler* s, uint8_t idx) {
-    scheduler_set_tx_delay(s, idx);
 }
 
 static uint8_t get_radio_idx(const Scheduler* s) {
@@ -110,9 +100,15 @@ static void scheduler_scene_start_set_mode(VariableItem* item) {
 
 static void scheduler_scene_start_set_tx_delay(VariableItem* item) {
     SchedulerApp* app = variable_item_get_context(item);
-    uint8_t index = variable_item_get_current_value_index(item);
-    variable_item_set_current_value_text(item, tx_delay_text[index]);
-    scheduler_set_tx_delay(app->scheduler, index);
+    uint8_t idx = variable_item_get_current_value_index(item);
+
+    uint16_t ms = (uint16_t)idx * TX_DELAY_STEP_MS;
+
+    char buf[12];
+    snprintf(buf, sizeof(buf), "%ums", (unsigned)ms);
+    variable_item_set_current_value_text(item, buf);
+
+    scheduler_set_tx_delay_ms(app->scheduler, ms);
 }
 
 static void scheduler_scene_start_set_radio(VariableItem* item) {
@@ -175,15 +171,17 @@ void scheduler_scene_start_on_enter(void* context) {
         set_tx_mode_idx,
         tx_mode_text);
 
-    add_scheduler_option_item(
-        var_item_list,
-        app,
-        "TX Delay:",
-        TX_DELAY_COUNT,
-        scheduler_scene_start_set_tx_delay,
-        get_tx_delay_idx,
-        set_tx_delay_idx,
-        tx_delay_text);
+    VariableItem* txd = variable_item_list_add(
+        var_item_list, "TX Delay:", TX_DELAY_COUNT, scheduler_scene_start_set_tx_delay, app);
+    uint8_t idx = scheduler_get_tx_delay_index(app->scheduler);
+    if(idx >= TX_DELAY_COUNT) {
+        idx = 0;
+    }
+    variable_item_set_current_value_index(txd, idx);
+
+    char buf[12];
+    snprintf(buf, sizeof(buf), "%ums", (unsigned)((uint16_t)idx * TX_DELAY_STEP_MS));
+    variable_item_set_current_value_text(txd, buf);
 
     const uint8_t radio_count = app->ext_radio_present ? RADIO_DEVICE_COUNT : 1;
     add_scheduler_option_item(

@@ -2,8 +2,6 @@
 #include "helpers/scheduler_settings_io.h"
 #include "src/scheduler_app_i.h"
 
-#include <subghz_scheduler_icons.h>
-
 #define TAG "SubGHzSchedulerLoadSchedule"
 
 static bool scheduler_load_schedule_dialog_and_apply(

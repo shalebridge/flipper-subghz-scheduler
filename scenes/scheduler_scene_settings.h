@@ -29,16 +29,9 @@ typedef enum SchedulerTimingMode {
 #define TIMING_MODE_COUNT SchedulerTimingModeNum
 static const char* const timing_mode_text[TIMING_MODE_COUNT] = {"Relative", "Precise"};
 
-#define TX_DELAY_COUNT 4
-typedef enum SchedulerTxDelay {
-    SchedulerTxDelay100 = 100,
-    SchedulerTxDelay250 = 250,
-    SchedulerTxDelay500 = 500,
-    SchedulerTxDelay1000 = 1000
-} SchedulerTxDelay;
-static const char* const tx_delay_text[TX_DELAY_COUNT] = {"100ms", "250ms", "500ms", "1000ms"};
-static const uint16_t tx_delay_value[TX_DELAY_COUNT] =
-    {SchedulerTxDelay100, SchedulerTxDelay250, SchedulerTxDelay500, SchedulerTxDelay1000};
+#define TX_DELAY_STEP_MS 50
+#define TX_DELAY_MAX_MS  1000
+#define TX_DELAY_COUNT   ((TX_DELAY_MAX_MS / TX_DELAY_STEP_MS) + 1)
 
 #define TX_COUNT 6
 static const char* const tx_count_text[TX_COUNT] = {

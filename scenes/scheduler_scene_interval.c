@@ -1,11 +1,4 @@
-#include "subghz_scheduler_icons.h"
 #include "src/scheduler_app_i.h"
-#include "src/subghz_scheduler.h"
-#include "views/scheduler_interval_view.h"
-
-#include <furi.h>
-#include <gui/elements.h>
-#include <stdio.h>
 
 void scheduler_scene_interval_on_enter(void* context) {
     SchedulerApp* app = context;

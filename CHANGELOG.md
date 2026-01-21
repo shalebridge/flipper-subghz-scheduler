@@ -2,13 +2,14 @@
 
 ## New Features
 - New top level menu:
-  - `New Schedule` -- Opens schedule edit window (previous startup menu).
+  - `New Schedule` -- Opens schedule edit window.
   - `Load Schedule` -- Loads schedule settings from a custom file.
   - `About` -- General info.
 - Creates `subghz_scheduler` app folder for saving files.
 - Edit menu now has `Save Schedule` option to save settings.
 - Add custom filetypes for settings and future enhancements.
-- Interval is now completely customizable instead of preset, from 00:00:01 to 99:59:59.
+- Interval is now customizable instead of preset, from 00:00:01 to 99:59:59.
+- TX Delay is now customizable in 50ms increments from 0-1000ms.
 ## Bug-fix
 - Code cleanup and stability improvements.
 

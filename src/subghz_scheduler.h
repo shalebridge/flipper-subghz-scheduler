@@ -30,8 +30,8 @@ uint8_t scheduler_get_tx_count(Scheduler* scheduler);
 void scheduler_set_tx_mode(Scheduler* scheduler, SchedulerTxMode tx_mode);
 SchedulerTxMode scheduler_get_tx_mode(Scheduler* scheduler);
 
-void scheduler_set_tx_delay(Scheduler* scheduler, uint8_t tx_delay);
-uint16_t scheduler_get_tx_delay(Scheduler* scheduler);
+void scheduler_set_tx_delay_ms(Scheduler* scheduler, uint16_t tx_delay_ms);
+uint16_t scheduler_get_tx_delay_ms(Scheduler* scheduler);
 uint8_t scheduler_get_tx_delay_index(Scheduler* scheduler);
 
 void scheduler_set_radio(Scheduler* scheduler, uint8_t radio);

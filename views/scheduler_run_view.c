@@ -4,7 +4,6 @@
 #include "helpers/scheduler_hms.h"
 
 #include <gui/elements.h>
-#include <subghz_scheduler_icons.h>
 
 #define TAG "SubGHzSchedulerRunView"
 

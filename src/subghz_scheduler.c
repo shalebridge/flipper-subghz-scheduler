@@ -13,7 +13,7 @@ struct Scheduler {
 
     char* file_name;
 
-    uint16_t tx_delay;
+    uint16_t tx_delay_ms;
 
     uint32_t interval_seconds;
 
@@ -48,7 +48,7 @@ void scheduler_time_reset(Scheduler* scheduler) {
 void scheduler_full_reset(Scheduler* scheduler) {
     furi_assert(scheduler);
     scheduler_time_reset(scheduler);
-    scheduler->tx_delay = SchedulerTxDelay100;
+    scheduler->tx_delay_ms = 100;
     scheduler->interval_seconds = 10; // Still default to 10 sec?
     scheduler->tx_count = 0;
     scheduler->file_type = SchedulerFileTypeSingle;
@@ -92,9 +92,11 @@ void scheduler_set_tx_mode(Scheduler* scheduler, SchedulerTxMode tx_mode) {
     scheduler->tx_mode = tx_mode;
 }
 
-void scheduler_set_tx_delay(Scheduler* scheduler, uint8_t tx_delay) {
+void scheduler_set_tx_delay_ms(Scheduler* scheduler, uint16_t tx_delay_ms) {
     furi_assert(scheduler);
-    scheduler->tx_delay = tx_delay_value[tx_delay];
+    if(tx_delay_ms > 1000u) tx_delay_ms = 1000u;
+    // allow 0ms (user requested 0..1000ms)
+    scheduler->tx_delay_ms = tx_delay_ms;
 }
 
 void scheduler_set_radio(Scheduler* scheduler, uint8_t radio) {
@@ -184,9 +186,9 @@ SchedulerTxMode scheduler_get_tx_mode(Scheduler* scheduler) {
     return scheduler->tx_mode;
 }
 
-uint16_t scheduler_get_tx_delay(Scheduler* scheduler) {
+uint16_t scheduler_get_tx_delay_ms(Scheduler* scheduler) {
     furi_assert(scheduler);
-    return scheduler->tx_delay;
+    return scheduler->tx_delay_ms;
 }
 
 bool scheduler_get_radio(Scheduler* scheduler) {
@@ -196,18 +198,8 @@ bool scheduler_get_radio(Scheduler* scheduler) {
 
 uint8_t scheduler_get_tx_delay_index(Scheduler* scheduler) {
     furi_assert(scheduler);
-    switch(scheduler->tx_delay) {
-    case SchedulerTxDelay100:
-        return 0;
-    case SchedulerTxDelay250:
-        return 1;
-    case SchedulerTxDelay500:
-        return 2;
-    case SchedulerTxDelay1000:
-        return 3;
-    default:
-        return 0;
-    }
+    uint16_t ms = CLAMP(scheduler->tx_delay_ms, 1000, 0);
+    return (ms / TX_DELAY_STEP_MS);
 }
 
 uint8_t scheduler_get_list_count(Scheduler* scheduler) {

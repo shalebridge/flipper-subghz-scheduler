@@ -20,7 +20,7 @@ struct ScheduleTxRun {
     FuriString* data;
     uint32_t ms_delay_delta;
     uint32_t frequency;
-    uint16_t tx_delay;
+    uint16_t tx_delay_ms;
     bool filetype;
 };
 
@@ -112,7 +112,7 @@ static int32_t scheduler_tx(void* context) {
 
     //uint16_t list_count = scheduler_get_list_count(app->scheduler);
     //uint16_t tx_count = 1;
-    tx_run->tx_delay = scheduler_get_tx_delay(app->scheduler);
+    tx_run->tx_delay_ms = scheduler_get_tx_delay_ms(app->scheduler);
     do {
         if(!flipper_format_file_open_existing(
                tx_run->fff_file, furi_string_get_cstr(tx_run->data))) {
@@ -155,7 +155,7 @@ static int32_t scheduler_tx(void* context) {
             transmit(app, device, transmitter);
 
             //if(tx_count < list_count) {
-            furi_delay_ms(tx_run->tx_delay);
+            furi_delay_ms(tx_run->tx_delay_ms);
             //}
         }
         //tx_count++;

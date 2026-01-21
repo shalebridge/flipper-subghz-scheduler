@@ -2,7 +2,6 @@
 
 #include <gui/icon_i.h>
 #include <gui/modules/widget.h>
-#include <subghz_scheduler_icons.h>
 
 #define TAG "SubGHzSchedulerAbout"
 

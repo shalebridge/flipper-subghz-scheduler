@@ -1,4 +1,5 @@
 #pragma once
+
 #include <gui/view.h>
 
 typedef struct Scheduler Scheduler;

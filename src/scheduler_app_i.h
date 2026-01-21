@@ -20,6 +20,7 @@
 #include <gui/scene_manager.h>
 #include <gui/view_dispatcher.h>
 #include <notification/notification_messages.h>
+#include <subghz_scheduler_icons.h>
 
 #define SCHEDULER_APP_NAME    "Sub-GHz Scheduler"
 #define SCHEDULER_APP_VERSION "3.0"

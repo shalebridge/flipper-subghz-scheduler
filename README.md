@@ -6,12 +6,8 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
 <table style="border:0px">
   <tr style="border:0px">
     <td style="border:0px" width="25%" align="left">
-    Schedule intervals selectable: <br>
-     <ul>
-       <li>Seconds: 1, 2, 5, 10, 30</li>
-       <li>Minutes: 1, 2, 5, 10, 20, 30, 45</li>
-       <li>Hours: 1, 2, 4, 8, 12, 24</li>
-     </ul>
+    Schedule intervals in H:M:S format <br>
+    from 00:00:01 to 99:59:59.
     </td>
     <td style="border:0px" width="20%"><img src="./screenshots/v2.3/intervals.png" width="100%"></td>
   </tr>
@@ -46,10 +42,8 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
  </tr>
 <tr style="border:0px">
   <td style="border:0px" width="25%" align="left">
-   Inter-transmission delay:<br>
-   <ul>
-    <li>100ms, 250ms, 500ms, 1 sec</li>
-   </ul>
+   Inter-transmission delay selectable<br>
+   from 0ms to 1000ms.
   </td>
    <td style="border:0px" width="20%"><img src="./screenshots/v2.3/txdelay.png" width="100%"></td>
   </tr>
