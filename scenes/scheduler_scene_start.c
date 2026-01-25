@@ -5,8 +5,17 @@
 
 #define TAG "Sub-GHzSchedulerSceneStart"
 
-typedef uint8_t (*SchedulerGetIdxFn)(const Scheduler* scheduler);
-typedef void (*SchedulerSetIdxFn)(Scheduler* scheduler, uint8_t idx);
+typedef enum MenuIndices {
+    MenuIndexInterval,
+    MenuIndexTiming,
+    MenuIndexTxCount,
+    MenuIndexTxMode,
+    MenuIndexTxDelay,
+    MenuIndexTxRadio,
+    MenuIndexSelectFile,
+    MenuIndexSaveSchedule,
+    MenuIndexStartSchedule
+};
 
 static uint8_t get_timing_idx(const Scheduler* s) {
     return scheduler_get_timing_mode((Scheduler*)s);
@@ -36,6 +45,8 @@ static void set_radio_idx(Scheduler* s, uint8_t idx) {
     scheduler_set_radio(s, idx);
 }
 
+typedef uint8_t (*SchedulerGetIdxFn)(const Scheduler* scheduler);
+typedef void (*SchedulerSetIdxFn)(Scheduler* scheduler, uint8_t idx);
 static VariableItem* add_scheduler_option_item(
     VariableItemList* list,
     SchedulerApp* app,
@@ -66,13 +77,13 @@ static void scheduler_scene_start_var_list_enter_callback(void* context, uint32_
     furi_assert(context);
     SchedulerApp* app = context;
 
-    if(index == 0) {
+    if(index == MenuIndexInterval) {
         scene_manager_next_scene(app->scene_manager, SchedulerSceneInterval);
-    } else if(index == SchedulerStartRunEvent) {
+    } else if(index == MenuIndexStartSchedule) {
         view_dispatcher_send_custom_event(app->view_dispatcher, SchedulerStartRunEvent);
-    } else if(index == SchedulerStartEventSelectFile) {
+    } else if(index == MenuIndexSelectFile) {
         view_dispatcher_send_custom_event(app->view_dispatcher, SchedulerStartEventSelectFile);
-    } else if(index == SchedulerStartEventSaveSchedule) {
+    } else if(index == MenuIndexSaveSchedule) {
         view_dispatcher_send_custom_event(app->view_dispatcher, SchedulerStartEventSaveSchedule);
     }
 }
@@ -134,12 +145,9 @@ void scheduler_scene_start_on_enter(void* context) {
         var_item_list, scheduler_scene_start_var_list_enter_callback, app);
 
     VariableItem* interval_item = variable_item_list_add(var_item_list, "Interval:", 0, NULL, app);
-    {
-        char hms[12];
-        const uint32_t sec = scheduler_get_interval_seconds(app->scheduler);
-        scheduler_seconds_to_hms_string(sec, hms, sizeof(hms));
-        variable_item_set_current_value_text(interval_item, hms);
-    }
+    const uint32_t sec = scheduler_get_interval_seconds(app->scheduler);
+    scheduler_seconds_to_hms_string(sec, buffer, sizeof(buffer));
+    variable_item_set_current_value_text(interval_item, buffer);
 
     add_scheduler_option_item(
         var_item_list,
@@ -173,15 +181,10 @@ void scheduler_scene_start_on_enter(void* context) {
 
     VariableItem* txd = variable_item_list_add(
         var_item_list, "TX Delay:", TX_DELAY_COUNT, scheduler_scene_start_set_tx_delay, app);
-    uint8_t idx = scheduler_get_tx_delay_index(app->scheduler);
-    if(idx >= TX_DELAY_COUNT) {
-        idx = 0;
-    }
+    const uint8_t idx = scheduler_get_tx_delay_index(app->scheduler);
     variable_item_set_current_value_index(txd, idx);
-
-    char buf[12];
-    snprintf(buf, sizeof(buf), "%ums", (unsigned)((uint16_t)idx * TX_DELAY_STEP_MS));
-    variable_item_set_current_value_text(txd, buf);
+    snprintf(buffer, sizeof(buffer), "%ums", (unsigned)((uint16_t)idx * TX_DELAY_STEP_MS));
+    variable_item_set_current_value_text(txd, buffer);
 
     const uint8_t radio_count = app->ext_radio_present ? RADIO_DEVICE_COUNT : 1;
     add_scheduler_option_item(
