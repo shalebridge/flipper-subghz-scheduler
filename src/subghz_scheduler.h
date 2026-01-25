@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "scenes/scheduler_scene_settings.h"
+#include "views/scheduler_start_view_settings.h"
 
 typedef struct Scheduler Scheduler;
 

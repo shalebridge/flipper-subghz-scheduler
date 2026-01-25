@@ -2,12 +2,12 @@
 
 #include "helpers/scheduler_custom_file_types.h"
 #include "scenes/scheduler_scene.h"
-#include "scenes/scheduler_scene_settings.h"
 #include "scheduler_app.h"
 #include "scheduler_custom_event.h"
 #include "subghz_scheduler.h"
 #include "views/scheduler_run_view.h"
 #include "views/scheduler_interval_view.h"
+#include "views/scheduler_start_view_settings.h"
 
 #include <dialogs/dialogs.h>
 #include <expansion/expansion.h>

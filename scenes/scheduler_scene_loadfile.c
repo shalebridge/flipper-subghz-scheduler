@@ -1,5 +1,6 @@
 #include "scheduler_scene_loadfile.h"
 #include "src/scheduler_app_i.h"
+#include "views/scheduler_start_view_settings.h"
 
 #include <flipper_format/flipper_format_i.h>
 #include <types.h>

@@ -1,5 +1,17 @@
 #pragma once
 
+typedef enum MenuIndices {
+    MenuIndexInterval,
+    MenuIndexTiming,
+    MenuIndexTxCount,
+    MenuIndexTxMode,
+    MenuIndexTxDelay,
+    MenuIndexTxRadio,
+    MenuIndexSelectFile,
+    MenuIndexSaveSchedule,
+    MenuIndexStartSchedule
+} MenuIndices;
+
 typedef enum FileTxType {
     SchedulerFileTypeSingle,
     SchedulerFileTypePlaylist,
