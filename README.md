@@ -112,8 +112,8 @@ Build outputs are found in the `dist` directory for each application.
 - [ ] Enable running in the background.
 - [ ] `TESTING IN PROGRESS` Enable interval delays for playlists. For example, turning on a light (playlist index 1), then 4 hours later turning it off (playlist index 2), and run that at another arbitrary interval. This can include custom playlist keys or custom app files.
 - [ ] `TESTING IN PROGRESS` Separate into multiple modes:  
-  - `Alarm`: To set specific time for transmission.
   - `Periodic`: Current functionality.
+  - `Alarm`: To set specific time for transmission.
   - `Custom`: Periodic with custom breaks and tx count between transmissions.
 - [ ] More visual feedback of current transmission (like `SubGHz Playlist`).
 - [ ] Enable quitting from transmission. Currently, if back is pressed during playlist transmission, transmission will complete before exiting to main menu.
