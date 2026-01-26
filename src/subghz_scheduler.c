@@ -67,11 +67,7 @@ void scheduler_reset_previous_time(Scheduler* scheduler) {
 void scheduler_set_interval_seconds(Scheduler* scheduler, uint32_t interval_seconds) {
     furi_assert(scheduler);
 
-    if(interval_seconds == 0u) {
-        interval_seconds = 1u;
-    }
-
-    scheduler->interval_seconds = interval_seconds;
+    scheduler->interval_seconds = CLAMP((int32_t)interval_seconds, 59, 1);
 
     // Optionally reset countdown immediately so change applies right away
     scheduler->countdown = interval_seconds;
@@ -94,9 +90,7 @@ void scheduler_set_tx_mode(Scheduler* scheduler, SchedulerTxMode tx_mode) {
 
 void scheduler_set_tx_delay_ms(Scheduler* scheduler, uint16_t tx_delay_ms) {
     furi_assert(scheduler);
-    if(tx_delay_ms > 1000u) tx_delay_ms = 1000u;
-    // allow 0ms (user requested 0..1000ms)
-    scheduler->tx_delay_ms = tx_delay_ms;
+    scheduler->tx_delay_ms = CLAMP(tx_delay_ms, 1000, 0);
 }
 
 void scheduler_set_radio(Scheduler* scheduler, uint8_t radio) {
@@ -198,8 +192,7 @@ bool scheduler_get_radio(Scheduler* scheduler) {
 
 uint8_t scheduler_get_tx_delay_index(Scheduler* scheduler) {
     furi_assert(scheduler);
-    uint16_t ms = CLAMP(scheduler->tx_delay_ms, 1000, 0);
-    return (ms / TX_DELAY_STEP_MS);
+    return (scheduler->tx_delay_ms / TX_DELAY_STEP_MS);
 }
 
 uint8_t scheduler_get_list_count(Scheduler* scheduler) {
