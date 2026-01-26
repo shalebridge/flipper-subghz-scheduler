@@ -68,9 +68,6 @@ void scheduler_set_interval_seconds(Scheduler* scheduler, uint32_t interval_seco
     furi_assert(scheduler);
 
     scheduler->interval_seconds = CLAMP((int32_t)interval_seconds, 59, 1);
-
-    // Optionally reset countdown immediately so change applies right away
-    scheduler->countdown = interval_seconds;
 }
 
 void scheduler_set_timing_mode(Scheduler* scheduler, bool tx_mode) {
