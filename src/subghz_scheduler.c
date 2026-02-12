@@ -67,7 +67,7 @@ void scheduler_reset_previous_time(Scheduler* scheduler) {
 void scheduler_set_interval_seconds(Scheduler* scheduler, uint32_t interval_seconds) {
     furi_assert(scheduler);
 
-    scheduler->interval_seconds = CLAMP((int32_t)interval_seconds, 59, 1);
+    scheduler->interval_seconds = interval_seconds ? interval_seconds : 1;
 }
 
 void scheduler_set_timing_mode(Scheduler* scheduler, bool tx_mode) {

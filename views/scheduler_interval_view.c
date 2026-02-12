@@ -120,6 +120,12 @@ static bool interval_view_input(InputEvent* event, void* context) {
                     consumed = true;
                 } else if(key == InputKeyOk) {
                     model->editing = !model->editing;
+                    // Don't allow 00:00:00, clamp to 00:00:01
+                    if(!model->editing) {
+                        if(scheduler_hms_to_seconds(&model->time) == 0) {
+                            model->time.s = 1;
+                        }
+                    }
                     consumed = true;
                 } else if(key == InputKeyBack && model->editing) {
                     model->editing = false;
@@ -141,13 +147,6 @@ static bool interval_view_input(InputEvent* event, void* context) {
                                  (model->time.s == 0 ? 59 : (uint8_t)(model->time.s - 1));
                     }
                     consumed = true;
-                }
-
-                // Don't allow 00:00:00, clamp to 00:00:01
-                if(!model->editing) {
-                    if(scheduler_hms_to_seconds(&model->time) == 0) {
-                        model->time.s = 1;
-                    }
                 }
             }
         },
