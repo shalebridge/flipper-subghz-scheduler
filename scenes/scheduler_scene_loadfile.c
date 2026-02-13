@@ -1,13 +1,9 @@
-#include "src/scheduler_app_i.h"
 #include "scheduler_scene_loadfile.h"
+#include "src/scheduler_app_i.h"
+#include "views/scheduler_start_view_settings.h"
 
-#include <furi_hal.h>
-#include <types.h>
-#include <dialogs/dialogs.h>
-#include <subghz_scheduler_icons.h>
-#include <lib/toolbox/stream/stream.h>
-//#include <lib/subghz/protocols/raw.h>
 #include <flipper_format/flipper_format_i.h>
+#include <types.h>
 
 #define TAG "SubGHzSchedulerLoadFile"
 
@@ -17,6 +13,8 @@ static int count_playlist_items(Storage* storage, const char* file_path) {
     int count = 0;
 
     if(!flipper_format_file_open_existing(format, file_path)) {
+        flipper_format_free(format);
+        furi_string_free(data);
         return FuriStatusError;
     }
     while(flipper_format_read_string(format, "sub", data)) {
@@ -31,35 +29,47 @@ static int count_playlist_items(Storage* storage, const char* file_path) {
 
 bool check_file_extension(const char* filename) {
     const char* extension = strrchr(filename, '.');
-    if(extension == NULL) {
-        return false;
-    } else {
-        return !strcmp(extension, ".txt") || !strcmp(extension, ".sub");
-    }
+    return !strcmp(extension, ".txt") || !strcmp(extension, ".sub");
 }
 
 static bool load_protocol_from_file(SchedulerApp* app) {
     furi_assert(app);
-    FuriString* file_path = furi_string_alloc();
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+
     DialogsFileBrowserOptions browser_options;
     dialog_file_browser_set_basic_options(&browser_options, ".sub|.txt", &I_sub1_10px);
+    browser_options.skip_assets = true;
+    browser_options.hide_ext = false;
     browser_options.base_path = SUBGHZ_APP_FOLDER;
-    furi_string_set(app->file_path, SUBGHZ_APP_FOLDER);
+    furi_string_set(app->tx_file_path, SUBGHZ_APP_FOLDER);
 
     // Input events and views are managed by file_select
-    bool res =
-        dialog_file_browser_show(app->dialogs, app->file_path, app->file_path, &browser_options);
+    bool ok = dialog_file_browser_show(
+        app->dialogs, app->tx_file_path, app->tx_file_path, &browser_options);
 
-    const char* filestr = furi_string_get_cstr(app->file_path);
-    if(res) {
-        int8_t list_count = count_playlist_items(storage, filestr);
+    if(ok) {
+        Storage* storage = furi_record_open(RECORD_STORAGE);
+        if(!storage) {
+            dialog_message_show_storage_error(app->dialogs, "Storage unavailable");
+            return false;
+        }
+        const char* filestr = furi_string_get_cstr(app->tx_file_path);
+        const char* ext = strrchr(filestr, '.');
+        int list_count = 0;
+
+        // Only attempt count of TXT playlist files
+        if(ext && strcmp(ext, ".txt") == 0) {
+            list_count = count_playlist_items(storage, filestr);
+            // TODO: if list_count == 0, treat as invalid playlist and throw error.
+        } else {
+            list_count = 0;
+        }
         scheduler_set_file(app->scheduler, filestr, list_count);
+        furi_record_close(RECORD_STORAGE);
+        return true;
     }
+    furi_string_reset(app->tx_file_path);
 
-    furi_record_close(RECORD_STORAGE);
-    furi_string_free(file_path);
-    return res;
+    return false;
 }
 
 void scheduler_scene_load_on_enter(void* context) {

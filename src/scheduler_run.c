@@ -1,14 +1,11 @@
 #include "scheduler_run.h"
 
-#include <devices/devices.h>
-#include <transmitter.h>
-#include <protocols/raw.h>
-#include <devices/cc1101_int/cc1101_int_interconnect.h>
 #include <applications/drivers/subghz/cc1101_ext/cc1101_ext_interconnect.h>
-
+#include <devices/cc1101_int/cc1101_int_interconnect.h>
+#include <devices/devices.h>
+#include <protocols/raw.h>
 #include <subghz_protocol_registry.h>
-
-#include <input/input.h>
+#include <transmitter.h>
 
 #define TAG "SubGhzSchedulerRun"
 
@@ -21,14 +18,14 @@ struct ScheduleTxRun {
     FuriString* protocol;
     FuriString* preset;
     FuriString* data;
-    bool filetype;
     uint32_t ms_delay_delta;
     uint32_t frequency;
-    uint16_t tx_delay;
+    uint16_t tx_delay_ms;
+    bool filetype;
 };
 
 static ScheduleTxRun* tx_run_alloc() {
-    ScheduleTxRun* tx_run = malloc(sizeof(ScheduleTxRun));
+    ScheduleTxRun* tx_run = calloc(1, sizeof(ScheduleTxRun));
     tx_run->storage = furi_record_open(RECORD_STORAGE);
     tx_run->fff_head = flipper_format_file_alloc(tx_run->storage);
     tx_run->fff_file = flipper_format_file_alloc(tx_run->storage);
@@ -88,6 +85,9 @@ static void
         subghz_devices_stop_async_tx(device);
     }
 
+    subghz_devices_idle(device);
+    subghz_transmitter_stop(transmitter);
+    subghz_transmitter_free(transmitter);
     notification_message(app->notifications, &sequence_blink_stop);
 }
 
@@ -103,13 +103,14 @@ static int32_t scheduler_tx(void* context) {
 
     tx_run->filetype = scheduler_get_file_type(app->scheduler);
     if(tx_run->filetype == SchedulerFileTypePlaylist) {
-        flipper_format_file_open_existing(tx_run->fff_head, furi_string_get_cstr(app->file_path));
+        flipper_format_file_open_existing(
+            tx_run->fff_head, furi_string_get_cstr(app->tx_file_path));
         flipper_format_read_string(tx_run->fff_head, "sub", tx_run->data);
     } else {
-        furi_string_set_str(tx_run->data, furi_string_get_cstr(app->file_path));
+        furi_string_set_str(tx_run->data, furi_string_get_cstr(app->tx_file_path));
     }
 
-    tx_run->tx_delay = scheduler_get_tx_delay(app->scheduler);
+    tx_run->tx_delay_ms = scheduler_get_tx_delay_ms(app->scheduler);
     do {
         if(!flipper_format_file_open_existing(
                tx_run->fff_file, furi_string_get_cstr(tx_run->data))) {
@@ -134,8 +135,8 @@ static int32_t scheduler_tx(void* context) {
         }
         flipper_format_file_close(tx_run->fff_file);
 
-        uint8_t repeats = scheduler_get_tx_repeats(app->scheduler);
-        for(uint_fast8_t i = 0; i <= repeats; ++i) {
+        uint8_t tx_count = scheduler_get_tx_count(app->scheduler);
+        for(uint_fast8_t i = 0; i <= tx_count; ++i) {
             subghz_environment_set_protocol_registry(
                 tx_run->environment, (void*)&subghz_protocol_registry);
             SubGhzTransmitter* transmitter = subghz_transmitter_alloc_init(
@@ -151,9 +152,7 @@ static int32_t scheduler_tx(void* context) {
 
             transmit(app, device, transmitter);
 
-            subghz_transmitter_free(transmitter);
-
-            furi_delay_ms(tx_run->tx_delay);
+            furi_delay_ms(tx_run->tx_delay_ms);
         }
     } while(tx_run->filetype == SchedulerFileTypePlaylist &&
             flipper_format_read_string(tx_run->fff_head, "sub", tx_run->data));
@@ -175,7 +174,7 @@ static void
         furi_thread_free(thread);
         app->thread = NULL;
         app->is_transmitting = false;
-        if(scheduler_get_mode(app->scheduler) == SchedulerTxModeOneShot) {
+        if(scheduler_get_tx_mode(app->scheduler) == SchedulerTxModeOneShot) {
             scene_manager_search_and_switch_to_previous_scene(
                 app->scene_manager, SchedulerSceneStart);
         }
@@ -186,6 +185,9 @@ static void
 }
 
 void scheduler_start_tx(SchedulerApp* app) {
+    if(app->thread || app->is_transmitting) {
+        return;
+    }
     app->thread = furi_thread_alloc_ex("SchedulerTxThread", 1024, scheduler_tx, app);
     furi_thread_set_state_callback(app->thread, scheduler_thread_state_callback);
     furi_thread_set_state_context(app->thread, app);
