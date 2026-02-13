@@ -1,4 +1,4 @@
-# v3.0-rc (2026-01-21)
+# v3.0 (2026-02-12)
 
 ## New Features
 - New top level menu:
