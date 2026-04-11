@@ -1,12 +1,12 @@
-# v3.0-rc (2026-01-21)
+# v3.0 (2026-02-12)
 
 ## New Features
 - New top level menu:
-  - `New Schedule` -- Opens schedule edit window.
-  - `Load Schedule` -- Loads schedule settings from a custom file.
-  - `About` -- General info.
-- Creates `subghz_scheduler` app folder for saving files.
-- Edit menu now has `Save Schedule` option to save settings.
+  - 'New Schedule' -- Opens schedule edit window.
+  - 'Load Schedule' -- Loads schedule settings from a custom file.
+  - 'About' -- General info.
+- Creates 'subghz_scheduler' app folder for saving files.
+- Edit menu now has 'Save Schedule' option to save settings.
 - Add custom filetypes for settings and future enhancements.
 - Interval is now H:M:S customizable instead of preset, from 00:00:01 to 99:59:59.
 - TX Delay is now customizable in 50ms increments from 0-1000ms.
