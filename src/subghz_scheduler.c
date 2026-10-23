@@ -6,6 +6,7 @@
 struct Scheduler {
     uint32_t next_fire_time;
     bool armed;
+    bool embedded_timing;
 
     FileTxType file_type;
     SchedulerTxMode tx_mode;
@@ -77,6 +78,7 @@ void scheduler_full_reset(Scheduler* scheduler) {
     scheduler->step_mode = SchedulerStepModeAll;
     scheduler->schedule_type = SchedulerScheduleUniform;
     scheduler->start_line = SchedulerStartLineFirst;
+    scheduler->embedded_timing = false;
     scheduler->radio = 0; // internal by default
     scheduler_reset_lines(scheduler);
 }
@@ -205,6 +207,7 @@ void scheduler_tx_done(Scheduler* scheduler) {
 
 bool scheduler_one_shot_done(Scheduler* scheduler) {
     furi_assert(scheduler);
+    if(scheduler->embedded_timing) return scheduler->current_line == 0;
     // Lines with a zero wait are chained to the line before them
     if(scheduler_get_effective_schedule(scheduler) == SchedulerSchedulePerLine &&
        scheduler->current_line != 0 && scheduler->line_interval[scheduler->current_line] == 0) {
@@ -217,6 +220,11 @@ bool scheduler_one_shot_done(Scheduler* scheduler) {
         return false;
     }
     return true;
+}
+
+void scheduler_set_embedded_timing(Scheduler* scheduler, bool enabled) {
+    furi_assert(scheduler);
+    scheduler->embedded_timing = enabled;
 }
 
 bool scheduler_is_armed(Scheduler* scheduler) {
@@ -400,7 +408,7 @@ uint32_t scheduler_get_line_time(Scheduler* scheduler, uint8_t line) {
 void scheduler_set_start_line(Scheduler* scheduler, SchedulerStartLine start_line) {
     furi_assert(scheduler);
     scheduler->start_line = (start_line < SchedulerStartLineNum) ? start_line :
-                                                                  SchedulerStartLineFirst;
+                                                                   SchedulerStartLineFirst;
 }
 
 SchedulerStartLine scheduler_get_start_line(Scheduler* scheduler) {
