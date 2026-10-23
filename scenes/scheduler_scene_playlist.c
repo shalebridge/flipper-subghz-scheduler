@@ -9,7 +9,6 @@ typedef enum {
     PlaylistActionRemoveLast,
     PlaylistActionClear,
     PlaylistActionSave,
-    PlaylistActionManage,
 } PlaylistAction;
 
 static void playlist_menu_callback(void* context, uint32_t index) {
@@ -43,8 +42,6 @@ static void playlist_rebuild(SchedulerApp* app) {
         submenu_add_item(
             app->menu, "Save playlist...", PlaylistActionSave, playlist_menu_callback, app);
     }
-    submenu_add_item(
-        app->menu, "Manage playlists...", PlaylistActionManage, playlist_menu_callback, app);
     submenu_set_selected_item(app->menu, PlaylistActionAdd);
     view_dispatcher_switch_to_view(app->view_dispatcher, SchedulerAppViewMenu);
 }
@@ -123,9 +120,6 @@ bool scheduler_scene_playlist_on_event(void* context, SceneManagerEvent event) {
         if(playlist_can_save(app)) {
             scene_manager_next_scene(app->scene_manager, SchedulerScenePlaylistName);
         }
-        return true;
-    case PlaylistActionManage:
-        scene_manager_next_scene(app->scene_manager, SchedulerScenePlaylistPick);
         return true;
     default:
         return event.event < SCHEDULER_PLAYLIST_MAX_ITEMS;

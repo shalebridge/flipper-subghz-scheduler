@@ -4,7 +4,7 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
 
 Playlists can also be stepped through one line at a time, with a separate wait or a time of day (HH:MM:SS) per line. See [Playlist Scheduling](#playlist-scheduling).
 
-You can build and manage playlists on the Flipper. The builder lets you add each signal in order, insert waits, save the result as a `.txt` playlist, and rename or delete saved playlists. See [Build a playlist on the Flipper](#build-a-playlist-on-the-flipper) for a walkthrough with device screenshots. A playlist containing `time:` lines carries its waits with it; selecting that file automatically enables **Step: One** and **Schedule: Per Line**.
+You can build and manage playlists on the Flipper. **Build Playlist** lets you add each signal in order, insert waits, and save the result as a `.txt` playlist. **Manage Playlists** is beside it on the main menu for renaming or deleting saved playlists. See [Build a playlist on the Flipper](#build-a-playlist-on-the-flipper) and [Manage saved playlists](#manage-saved-playlists) for device screenshots. A playlist containing `time:` lines carries its waits with it; selecting that file automatically enables **Step: One** and **Schedule: Per Line**.
 
 
 <table style="border:0px">
@@ -128,7 +128,21 @@ Each `time:` applies to the next `sub:` line. Consecutive `sub:` lines without a
 
 To run a hand-written file, choose **New Schedule → Select File**, select the `.txt` file, then **Start**. The app reads waits from the file automatically. Plain `sub:` playlists still use the schedule options below.
 
-Use **Build Playlist → Manage playlists...** to rename or delete `.txt` files saved in `/ext/subghz/playlist/`. Delete asks for confirmation. These actions change the playlist file, not the referenced `.sub` signals.
+### Manage saved playlists
+
+Open **Manage Playlists** from the app's main menu to rename or delete `.txt` files saved in `/ext/subghz/playlist/`.
+
+| Step | Screen |
+|---|---|
+| 1. Select **Manage Playlists**. | <img src="screenshots/timed_playlists/manage-main-menu.png" width="256" alt="Manage Playlists selected on the main menu"> |
+| 2. Choose a saved playlist. | <img src="screenshots/timed_playlists/saved-playlists.png" width="256" alt="Saved Playlists list containing lights.txt"> |
+| 3. Choose **Rename** or **Delete**. | <img src="screenshots/timed_playlists/manage-actions.png" width="256" alt="Rename and Delete actions for lights.txt"> |
+
+**Delete** asks for confirmation before removing the playlist file:
+
+<img src="screenshots/timed_playlists/delete-confirmation.png" width="512" alt="Delete playlist confirmation for lights.txt">
+
+Renaming or deleting a playlist changes its `.txt` file, not the referenced `.sub` signals.
 
 ### Schedule options
 
