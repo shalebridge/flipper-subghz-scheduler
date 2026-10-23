@@ -4,6 +4,25 @@
 #include <string.h>
 #include <limits.h>
 
+static bool playlist_parse_wait_seconds(const char* text, uint32_t* seconds) {
+    while(*text == ' ' || *text == '\t')
+        text++;
+    if(*text < '0' || *text > '9') return false;
+
+    uint32_t value = 0;
+    do {
+        const uint32_t digit = *text++ - '0';
+        if(value > (UINT32_MAX - digit) / 10) return false;
+        value = value * 10 + digit;
+    } while(*text >= '0' && *text <= '9');
+
+    while(*text == ' ' || *text == '\t')
+        text++;
+    if(*text || value > SCHEDULER_PLAYLIST_MAX_WAIT_SECONDS) return false;
+    *seconds = value;
+    return true;
+}
+
 static bool playlist_parse_line(
     char* line,
     SchedulerPlaylistTiming* timing,
@@ -12,21 +31,7 @@ static bool playlist_parse_line(
     while(*line == ' ' || *line == '\t')
         line++;
     if(!strncmp(line, "time:", 5)) {
-        line += 5;
-        while(*line == ' ' || *line == '\t')
-            line++;
-        if(*line < '0' || *line > '9') return false;
-        uint32_t value = 0;
-        do {
-            const uint32_t digit = *line++ - '0';
-            if(value > (UINT32_MAX - digit) / 10) return false;
-            value = value * 10 + digit;
-        } while(*line >= '0' && *line <= '9');
-        while(*line == ' ' || *line == '\t')
-            line++;
-        if(*line) return false;
-        if(value > SCHEDULER_PLAYLIST_MAX_WAIT_SECONDS) return false;
-        *pending = value;
+        if(!playlist_parse_wait_seconds(line + 5, pending)) return false;
         *waiting_for_sub = true;
         timing->has_timing = true;
     } else if(!strncmp(line, "sub:", 4)) {
