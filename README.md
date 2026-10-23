@@ -4,11 +4,7 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
 
 Playlists can also be stepped through one line at a time, with a separate wait or a time of day (HH:MM:SS) per line. See [Playlist Scheduling](#playlist-scheduling).
 
-You can build and manage playlists on the Flipper. The builder lets you add each signal in order, insert waits, save the result as a `.txt` playlist, and rename or delete saved playlists. A playlist containing `time:` lines carries its waits with it; selecting that file automatically enables **Step: One** and **Schedule: Per Line**.
-
-| Build a playlist | Add a wait | Saved sequence | Run screen |
-|---|---|---|---|
-| ![Build Playlist menu](screenshots/timed_playlists/build-playlist.png) | ![Wait entry](screenshots/timed_playlists/add-wait.png) | ![Wait and signal in the builder](screenshots/timed_playlists/timed-builder.png) | ![Timed playlist countdown](screenshots/timed_playlists/timed-run.png) |
+You can build and manage playlists on the Flipper. The builder lets you add each signal in order, insert waits, save the result as a `.txt` playlist, and rename or delete saved playlists. See [Build a playlist on the Flipper](#build-a-playlist-on-the-flipper) for a walkthrough with device screenshots. A playlist containing `time:` lines carries its waits with it; selecting that file automatically enables **Step: One** and **Schedule: Per Line**.
 
 
 <table style="border:0px">
@@ -92,6 +88,23 @@ You can build and manage playlists on the Flipper. The builder lets you add each
 </table>
 
 ## Playlist Scheduling
+
+### Build a playlist on the Flipper
+
+Each signal is a separate entry, so select the same `.sub` file again whenever you want to repeat it. Add a wait before the signal it should delay. These screenshots show the steps on a Flipper Zero:
+
+| Step | Screen |
+|---|---|
+| 1. Open **Build Playlist** from the app's main menu. | <img src="screenshots/timed_playlists/main-menu.png" width="256" alt="Sub-GHz Scheduler main menu with Build Playlist"> |
+| 2. Choose **Add wait...** to start with a delay, or **Add signal...** to start immediately. | <img src="screenshots/timed_playlists/build-playlist.png" width="256" alt="Empty playlist builder with Add signal selected"> |
+| 3. For a wait, enter the number of seconds before the next signal. Add more waits later wherever needed. | <img src="screenshots/timed_playlists/add-wait.png" width="256" alt="Entering a wait in seconds"> |
+| 4. Choose **Add signal...** and select a `.sub` file. Repeat this for every transmission, including repeats of the same file. | <img src="screenshots/timed_playlists/select-signal.png" width="256" alt="File browser with Singlelight.sub selected"> |
+| 5. Review the numbered entries. **Remove last** undoes the most recent entry; **Clear list** starts over. | <img src="screenshots/timed_playlists/timed-builder.png" width="256" alt="Playlist builder showing Singlelight.sub as the second entry"> |
+| 6. Choose **Save playlist...**, enter a name, and select **save** on the keyboard. The app writes a `.txt` file to `/ext/subghz/playlist/`. | <img src="screenshots/timed_playlists/save-playlist.png" width="256" alt="Save playlist as name entry screen"> |
+
+To run it, choose **New Schedule → Select File**, select the saved `.txt` file, then **Start**. A playlist with waits shows the next signal and countdown on the run screen:
+
+<img src="screenshots/timed_playlists/timed-run.png" width="512" alt="Run screen showing the next timed playlist signal and countdown">
 
 ### Timed playlist text files
 
