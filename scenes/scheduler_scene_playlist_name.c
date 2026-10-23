@@ -19,31 +19,72 @@ static bool playlist_save(SchedulerApp* app, const char* path) {
     }
 
     File* file = storage_file_alloc(storage);
-    bool ok = storage_file_open(file, path, FSAM_WRITE, FSOM_CREATE_NEW);
-    const bool created = ok;
+    if(!storage_file_open(file, path, FSAM_WRITE, FSOM_CREATE_NEW)) {
+        storage_file_free(file);
+        furi_record_close(RECORD_STORAGE);
+        return false;
+    }
+
+    bool ok = true;
     FuriString* line = furi_string_alloc();
 
-    if(ok) {
-        for(uint8_t i = 0; i < app->playlist_count; i++) {
-            const char* item = furi_string_get_cstr(app->playlist_items[i]);
-            if(!strncmp(item, "time:", 5))
-                furi_string_printf(line, "%s\n", item);
-            else
-                furi_string_printf(line, "sub: %s\n", item);
-            if(storage_file_write(file, furi_string_get_cstr(line), furi_string_size(line)) !=
-               furi_string_size(line)) {
-                ok = false;
-                break;
-            }
+    for(uint8_t i = 0; i < app->playlist_count; i++) {
+        const char* item = furi_string_get_cstr(app->playlist_items[i]);
+        if(!strncmp(item, "time:", 5))
+            furi_string_printf(line, "%s\n", item);
+        else
+            furi_string_printf(line, "sub: %s\n", item);
+        if(storage_file_write(file, furi_string_get_cstr(line), furi_string_size(line)) !=
+           furi_string_size(line)) {
+            ok = false;
+            break;
         }
     }
 
     if(!storage_file_close(file)) ok = false;
     storage_file_free(file);
     furi_string_free(line);
-    if(created && !ok) storage_common_remove(storage, path);
+    if(!ok) storage_common_remove(storage, path);
     furi_record_close(RECORD_STORAGE);
     return ok;
+}
+
+static void playlist_activate_saved_file(SchedulerApp* app, FuriString* path) {
+    Storage* storage = furi_record_open(RECORD_STORAGE);
+    SchedulerPlaylistTiming timing;
+    const bool valid =
+        scheduler_playlist_read_timing(storage, furi_string_get_cstr(path), &timing);
+    furi_record_close(RECORD_STORAGE);
+    if(!valid) {
+        dialog_message_show_storage_error(app->dialogs, "Invalid playlist");
+        return;
+    }
+
+    furi_string_set(app->tx_file_path, path);
+    scheduler_set_file(app->scheduler, furi_string_get_cstr(path), timing.count);
+    scheduler_set_embedded_timing(app->scheduler, timing.has_timing);
+    if(timing.has_timing) {
+        scheduler_set_step_mode(app->scheduler, SchedulerStepModeOne);
+        scheduler_set_schedule_type(app->scheduler, SchedulerSchedulePerLine);
+        for(uint8_t i = 0; i < timing.count; ++i)
+            scheduler_set_line_interval(app->scheduler, i, timing.wait_seconds[i]);
+    }
+    app->should_reset = false;
+    snprintf(app->popup_msg, sizeof(app->popup_msg), "Saved %u signals", timing.count);
+    scheduler_popup_success_show(app, app->popup_msg);
+}
+
+static void playlist_save_named(SchedulerApp* app) {
+    if(!app->playlist_name_tmp[0] || !app->playlist_count) return;
+
+    FuriString* path =
+        furi_string_alloc_printf("%s/%s.txt", SCHEDULER_PLAYLIST_FOLDER, app->playlist_name_tmp);
+    if(playlist_save(app, furi_string_get_cstr(path))) {
+        playlist_activate_saved_file(app, path);
+    } else {
+        dialog_message_show_storage_error(app->dialogs, "Failed to save playlist");
+    }
+    furi_string_free(path);
 }
 
 void scheduler_scene_playlist_name_on_enter(void* context) {
@@ -76,37 +117,7 @@ bool scheduler_scene_playlist_name_on_event(void* context, SceneManagerEvent eve
     if(event.type != SceneManagerEventTypeCustom) return false;
 
     if(event.event == PLAYLIST_SAVE_EVENT) {
-        if(!app->playlist_name_tmp[0] || !app->playlist_count) return true;
-
-        FuriString* path = furi_string_alloc_printf(
-            "%s/%s.txt", SCHEDULER_PLAYLIST_FOLDER, app->playlist_name_tmp);
-        if(!playlist_save(app, furi_string_get_cstr(path))) {
-            dialog_message_show_storage_error(app->dialogs, "Failed to save playlist");
-        } else {
-            furi_string_set(app->tx_file_path, path);
-            Storage* storage = furi_record_open(RECORD_STORAGE);
-            SchedulerPlaylistTiming timing;
-            bool valid =
-                scheduler_playlist_read_timing(storage, furi_string_get_cstr(path), &timing);
-            furi_record_close(RECORD_STORAGE);
-            if(!valid) {
-                dialog_message_show_storage_error(app->dialogs, "Invalid playlist");
-                furi_string_free(path);
-                return true;
-            }
-            scheduler_set_file(app->scheduler, furi_string_get_cstr(path), timing.count);
-            scheduler_set_embedded_timing(app->scheduler, timing.has_timing);
-            if(timing.has_timing) {
-                scheduler_set_step_mode(app->scheduler, SchedulerStepModeOne);
-                scheduler_set_schedule_type(app->scheduler, SchedulerSchedulePerLine);
-                for(uint8_t i = 0; i < timing.count; ++i)
-                    scheduler_set_line_interval(app->scheduler, i, timing.wait_seconds[i]);
-            }
-            app->should_reset = false;
-            snprintf(app->popup_msg, sizeof(app->popup_msg), "Saved %u signals", timing.count);
-            scheduler_popup_success_show(app, app->popup_msg);
-        }
-        furi_string_free(path);
+        playlist_save_named(app);
         return true;
     }
 

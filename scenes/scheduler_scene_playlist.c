@@ -49,6 +49,46 @@ static void playlist_rebuild(SchedulerApp* app) {
     view_dispatcher_switch_to_view(app->view_dispatcher, SchedulerAppViewMenu);
 }
 
+static void playlist_add_signal(SchedulerApp* app) {
+    if(app->playlist_count == SCHEDULER_PLAYLIST_MAX_ITEMS) {
+        dialog_message_show_storage_error(app->dialogs, "Playlist is full");
+        return;
+    }
+
+    DialogsFileBrowserOptions options;
+    dialog_file_browser_set_basic_options(&options, ".sub", &I_sub1_10px);
+    options.skip_assets = true;
+    options.hide_ext = false;
+    options.base_path = SUBGHZ_APP_FOLDER;
+
+    FuriString* path = furi_string_alloc_set_str(SUBGHZ_APP_FOLDER);
+    if(dialog_file_browser_show(app->dialogs, path, path, &options)) {
+        app->playlist_items[app->playlist_count++] = path;
+    } else {
+        furi_string_free(path);
+    }
+    playlist_rebuild(app);
+}
+
+static void playlist_remove_last(SchedulerApp* app) {
+    if(!app->playlist_count) return;
+    furi_string_free(app->playlist_items[--app->playlist_count]);
+    app->playlist_items[app->playlist_count] = NULL;
+}
+
+static bool playlist_can_save(SchedulerApp* app) {
+    if(!app->playlist_count) {
+        dialog_message_show_storage_error(app->dialogs, "Add a signal first");
+        return false;
+    }
+    const char* last = furi_string_get_cstr(app->playlist_items[app->playlist_count - 1]);
+    if(!strncmp(last, "time:", 5)) {
+        dialog_message_show_storage_error(app->dialogs, "Add a signal after wait");
+        return false;
+    }
+    return true;
+}
+
 void scheduler_scene_playlist_on_enter(void* context) {
     SchedulerApp* app = context;
     playlist_rebuild(app);
@@ -59,32 +99,11 @@ bool scheduler_scene_playlist_on_event(void* context, SceneManagerEvent event) {
     if(event.type != SceneManagerEventTypeCustom) return false;
 
     switch(event.event) {
-    case PlaylistActionAdd: {
-        if(app->playlist_count == SCHEDULER_PLAYLIST_MAX_ITEMS) {
-            dialog_message_show_storage_error(app->dialogs, "Playlist is full");
-            return true;
-        }
-
-        DialogsFileBrowserOptions options;
-        dialog_file_browser_set_basic_options(&options, ".sub", &I_sub1_10px);
-        options.skip_assets = true;
-        options.hide_ext = false;
-        options.base_path = SUBGHZ_APP_FOLDER;
-
-        FuriString* path = furi_string_alloc_set_str(SUBGHZ_APP_FOLDER);
-        if(dialog_file_browser_show(app->dialogs, path, path, &options)) {
-            app->playlist_items[app->playlist_count++] = path;
-        } else {
-            furi_string_free(path);
-        }
-        playlist_rebuild(app);
+    case PlaylistActionAdd:
+        playlist_add_signal(app);
         return true;
-    }
     case PlaylistActionRemoveLast:
-        if(app->playlist_count) {
-            furi_string_free(app->playlist_items[--app->playlist_count]);
-            app->playlist_items[app->playlist_count] = NULL;
-        }
+        playlist_remove_last(app);
         playlist_rebuild(app);
         return true;
     case PlaylistActionWait:
@@ -96,26 +115,12 @@ bool scheduler_scene_playlist_on_event(void* context, SceneManagerEvent event) {
         return true;
     case PlaylistActionClear:
         while(app->playlist_count) {
-            furi_string_free(app->playlist_items[--app->playlist_count]);
-            app->playlist_items[app->playlist_count] = NULL;
+            playlist_remove_last(app);
         }
         playlist_rebuild(app);
         return true;
     case PlaylistActionSave:
-        if(app->playlist_count) {
-            const char* last = furi_string_get_cstr(app->playlist_items[app->playlist_count - 1]);
-            if(!strncmp(last, "time:", 5)) {
-                dialog_message_show_storage_error(app->dialogs, "Add a signal after wait");
-                return true;
-            }
-            bool has_signal = false;
-            for(uint8_t i = 0; i < app->playlist_count; i++)
-                has_signal |= strncmp(furi_string_get_cstr(app->playlist_items[i]), "time:", 5) !=
-                              0;
-            if(!has_signal) {
-                dialog_message_show_storage_error(app->dialogs, "Add a signal first");
-                return true;
-            }
+        if(playlist_can_save(app)) {
             scene_manager_next_scene(app->scene_manager, SchedulerScenePlaylistName);
         }
         return true;
