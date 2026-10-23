@@ -4,6 +4,12 @@ A Flipper Zero app to send SubGHz signals at a given interval. Individual `*.sub
 
 Playlists can also be stepped through one line at a time, with a separate wait or a time of day (HH:MM:SS) per line. See [Playlist Scheduling](#playlist-scheduling).
 
+You can build and manage playlists on the Flipper. The builder lets you add each signal in order, insert waits, save the result as a `.txt` playlist, and rename or delete saved playlists. A playlist containing `time:` lines carries its waits with it; selecting that file automatically enables **Step: One** and **Schedule: Per Line**.
+
+| Build a playlist | Add a wait | Saved sequence | Run screen |
+|---|---|---|---|
+| ![Build Playlist menu](screenshots/timed_playlists/build-playlist.png) | ![Wait entry](screenshots/timed_playlists/add-wait.png) | ![Wait and signal in the builder](screenshots/timed_playlists/timed-builder.png) | ![Timed playlist countdown](screenshots/timed_playlists/timed-run.png) |
+
 
 <table style="border:0px">
   <tr style="border:0px">
@@ -87,6 +93,32 @@ Playlists can also be stepped through one line at a time, with a separate wait o
 
 ## Playlist Scheduling
 
+### Timed playlist text files
+
+Create a playlist through **Build Playlist** or write a `.txt` file directly. Select `Add signal...` for every transmission, including repeats of the same signal. Select `Add wait...` to set the delay in seconds before the next signal. The builder saves these entries under `/ext/subghz/playlist/`.
+
+For example:
+
+```text
+time: 10
+sub: /ext/subghz/speed_up.sub
+sub: /ext/subghz/speed_up.sub
+sub: /ext/subghz/speed_up.sub
+time: 100
+sub: /ext/subghz/slow_down.sub
+sub: /ext/subghz/slow_down.sub
+time: 15
+sub: /ext/subghz/speed_up.sub
+```
+
+Each `time:` applies to the next `sub:` line. Consecutive `sub:` lines without another `time:` are sent back to back, with the configured TX Delay between them. A missing initial `time:` means the first signal starts immediately. After the final line, **Normal** mode repeats from the first line and applies its wait again. **1-Shot** mode runs through all lines once and stops. `time:` must contain a whole number from 0 to 359999 seconds and be followed by a `sub:` line; `.txt` playlists support up to 127 signals. Use paths that exist on your Flipper; the examples above use the stock SD card prefix `/ext`.
+
+To run a hand-written file, choose **New Schedule → Select File**, select the `.txt` file, then **Start**. The app reads waits from the file automatically. Plain `sub:` playlists still use the schedule options below.
+
+Use **Build Playlist → Manage playlists...** to rename or delete `.txt` files saved in `/ext/subghz/playlist/`. Delete asks for confirmation. These actions change the playlist file, not the referenced `.sub` signals.
+
+### Schedule options
+
 When a playlist (`*.txt`) is selected, extra options appear in the schedule menu.
 
 **Step**
@@ -102,7 +134,7 @@ When a playlist (`*.txt`) is selected, extra options appear in the schedule menu
 * `Line 1`: start with line 1 and wait for its time, even if that is tomorrow (default).
 * `Nearest`: start with the line whose time comes up first, then continue in playlist order. Started at 19:00 in the example below, line 4 is sent at 23:00 and line 1 the next day at 17:30:00.
 
-Set the wait or time of each line under `Edit Lines...`. The same time editor is used: Left/Right select a block, Up/Down change it, OK saves and Back cancels. These settings are stored in the `*.sch` file; the playlist itself is not changed and still works with the stock `SubGHz Playlist` app.
+Set the wait or time of each line under `Edit Lines...`. The same time editor is used: Left/Right select a block, Up/Down change it, OK saves and Back cancels. Settings entered through `Edit Lines...` are stored in the `*.sch` file. Timed playlists built with `Add wait...` store their waits as `time:` lines in the `.txt` file. The stock `SubGHz Playlist` app can still read the `sub:` entries, but it does not apply these waits.
 
 Example: a playlist with 4 lines and Schedule `Time`:
 

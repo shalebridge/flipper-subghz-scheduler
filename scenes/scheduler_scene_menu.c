@@ -7,6 +7,7 @@
 typedef enum {
     SchedulerMenuItemNewSchedule = 0,
     SchedulerMenuItemLoadSchedule,
+    SchedulerMenuItemBuildPlaylist,
     SchedulerMenuItemAbout,
 } SchedulerMenuItem;
 
@@ -36,6 +37,12 @@ void scheduler_scene_menu_on_enter(void* context) {
         scheduler_scene_menu_callback,
         app);
     submenu_add_item(
+        app->menu,
+        "Build Playlist",
+        SchedulerMenuItemBuildPlaylist,
+        scheduler_scene_menu_callback,
+        app);
+    submenu_add_item(
         app->menu, "About", SchedulerMenuItemAbout, scheduler_scene_menu_callback, app);
 
     submenu_set_selected_item(
@@ -59,6 +66,9 @@ bool scheduler_scene_menu_on_event(void* context, SceneManagerEvent event) {
         case SchedulerMenuItemLoadSchedule:
             app->should_reset = false;
             scene_manager_next_scene(app->scene_manager, SchedulerSceneLoadSchedule);
+            return true;
+        case SchedulerMenuItemBuildPlaylist:
+            scene_manager_next_scene(app->scene_manager, SchedulerScenePlaylist);
             return true;
         case SchedulerMenuItemAbout:
             app->should_reset = false;
