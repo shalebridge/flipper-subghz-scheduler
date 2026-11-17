@@ -45,7 +45,7 @@
 # v3.1 (unreleased)
 
 ## Bug-fix
-- Fix external module detection and usage [PR #10], by Lechnio
+- Fix external module detection and usage PR #10, by @Lechnio
 
 # v3.0 (2026-02-12)
 
